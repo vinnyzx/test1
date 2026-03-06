@@ -14,12 +14,22 @@ use App\Http\Controllers\AdminControllers\AttributeValueController;
 |--------------------------------------------------------------------------
 */
 
+// Client
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/admin', function () {
-    return view('admin.dashboard.index');
+
+
+
+
+// Admin
+Route::prefix('admin')->name('admin.')->group(function () {
+
+
+    Route::get('/', function () {
+        return view('admin.dashboard.index');
+    })->name('dashboard');
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {

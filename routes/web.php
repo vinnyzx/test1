@@ -7,8 +7,11 @@ use App\Http\Controllers\AdminControllers\BrandController;
 use App\Http\Controllers\AdminControllers\ProductController;
 use App\Http\Controllers\AdminControllers\AttributeController;
 use App\Http\Controllers\AdminControllers\AttributeValueController;
+use App\Http\Controllers\AdminControllers\CommentController as AdminCommentController;
 use App\Http\Controllers\AdminControllers\VoucherController;
 use App\Http\Controllers\AdminControllers\UserController;
+use App\Http\Controllers\ProductController as FrontProductController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +27,7 @@ Route::get('/', function () {
 // ==========================================
 // HỆ THỐNG ADMIN
 // ==========================================
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
 
     // Bảng điều khiển
     Route::get('/', function () {
@@ -71,8 +74,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force_delete');
     Route::resource('products', ProductController::class);
 
+    Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
+    Route::delete('comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+
     // 6. Quản lý Vouchers
     Route::post('vouchers/{id}/restore', [VoucherController::class, 'restore'])->name('vouchers.restore');
     Route::resource('vouchers', VoucherController::class);
 
 });
+
+// Public product routes and comment endpoints
+Route::get('/products/{product}', [FrontProductController::class, 'show'])->name('products.show');
+Route::post('/products/{product}/comments', [CommentController::class, 'store'])->name('products.comments.store');

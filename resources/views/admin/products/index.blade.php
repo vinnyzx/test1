@@ -121,6 +121,9 @@
                                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
     <a href="{{ route('admin.products.show', $product->id) }}" class="text-[11px] font-bold text-gray-500 hover:text-primary transition-colors">Xem</a>
     <span class="text-gray-300 text-[10px]">|</span>
+
+    <a href="{{ route('products.show', $product->id) }}#comments" class="text-[11px] font-bold text-gray-500 hover:text-primary transition-colors">Xem comment</a>
+<span class="text-gray-300 text-[10px]">|</span>
     
     <a href="{{ route('admin.products.edit', $product->id) }}" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 transition-colors">Sửa</a>
     <span class="text-gray-300 text-[10px]">|</span>

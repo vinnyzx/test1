@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminControllers\CategoryController;
 use App\Http\Controllers\AdminControllers\CategoryFilterController;
 use App\Http\Controllers\AdminControllers\BrandController;
 use App\Http\Controllers\AdminControllers\ProductController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // Client
@@ -50,4 +51,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('products.create');
     Route::post('products', [ProductController::class, 'store'])
         ->name('products.store');
+
+    Route::get('orders', [OrderController::class, 'index'])
+        ->name('orders.index');
+    Route::get('orders/{order}', [OrderController::class, 'show'])
+        ->name('orders.show');
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])
+        ->name('orders.status.update');
+    Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
+        ->name('orders.cancel');
+    Route::patch('orders/{order}/return-confirm', [OrderController::class, 'confirmReturn'])
+        ->name('orders.return.confirm');
+    Route::get('orders/{order}/print-pdf', [OrderController::class, 'printPdf'])
+        ->name('orders.print.pdf');
 });

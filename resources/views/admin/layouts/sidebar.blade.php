@@ -1,4 +1,5 @@
-<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col fixed h-full z-50">
+<aside
+    class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col fixed h-full z-50">
     <div class="p-6 flex items-center gap-3">
         <div class="bg-primary rounded-lg p-1.5 flex items-center justify-center">
             <span class="material-symbols-outlined text-background-dark font-bold">smartphone</span>

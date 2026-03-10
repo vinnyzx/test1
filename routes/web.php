@@ -34,6 +34,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // ĐÃ FIX: Chuyển Users vào trong group admin. Dùng resource để tự động tạo name admin.users.*
     Route::resource('users', UserController::class);
+    Route::post('user/{id}/block',[UserController::class,'block'])->name('user.block');
+    Route::post('user/{id}/unblock',[UserController::class,'unBlock'])->name('user.unblock');
+    Route::post('user/{id}/reset',[UserController::class,'resetPw'])->name('resetPw');
 
     // 1. Quản lý Danh mục & Thương hiệu
     Route::resource('categories', CategoryController::class)->except(['show']);
@@ -46,7 +49,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::patch('categories/{category}/filters/attributes/{attribute}/toggle', [CategoryFilterController::class, 'toggleFilterable'])->name('categories.filters.attributes.toggle');
     Route::delete('categories/{category}/filters/attributes/{attribute}', [CategoryFilterController::class, 'detachAttribute'])->name('categories.filters.attributes.detach');
 
-<<<<<<< HEAD
     Route::get('products/create', [ProductController::class, 'create'])
         ->name('products.create');
     Route::post('products', [ProductController::class, 'store'])
@@ -65,7 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('attributes/{attribute}/values/trash', [AttributeValueController::class, 'trash'])->name('attributes.values.trash');
     Route::post('attribute-values/{id}/restore', [AttributeValueController::class, 'restore'])->name('attributes.values.restore');
     Route::delete('attribute-values/{id}/force-delete', [AttributeValueController::class, 'forceDelete'])->name('attributes.values.force_delete');
-    
+
     Route::get('attributes/{attribute}/values', [AttributeValueController::class, 'index'])->name('attributes.values.index');
     Route::post('attributes/{attribute}/values', [AttributeValueController::class, 'store'])->name('attributes.values.store');
     Route::get('attributes/{attribute}/values/{attribute_value}/edit', [AttributeValueController::class, 'edit'])->name('attributes.values.edit');
@@ -81,19 +83,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // 6. Quản lý Vouchers
     Route::post('vouchers/{id}/restore', [VoucherController::class, 'restore'])->name('vouchers.restore');
     Route::resource('vouchers', VoucherController::class);
-
-    // 7. Quản lý Đơn hàng
-    Route::get('orders', [OrderController::class, 'index'])
-        ->name('orders.index');
-    Route::get('orders/{order}', [OrderController::class, 'show'])
-        ->name('orders.show');
-    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])
-        ->name('orders.status.update');
-    Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
-        ->name('orders.cancel');
-    Route::patch('orders/{order}/return-confirm', [OrderController::class, 'confirmReturn'])
-        ->name('orders.return.confirm');
-    Route::get('orders/{order}/print-pdf', [OrderController::class, 'printPdf'])
-        ->name('orders.print.pdf');
 
 });

@@ -9,7 +9,7 @@ use App\Http\Controllers\AdminControllers\AttributeController;
 use App\Http\Controllers\AdminControllers\AttributeValueController;
 use App\Http\Controllers\AdminControllers\VoucherController;
 use App\Http\Controllers\AdminControllers\UserController;
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminControllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +46,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::patch('categories/{category}/filters/attributes/{attribute}/toggle', [CategoryFilterController::class, 'toggleFilterable'])->name('categories.filters.attributes.toggle');
     Route::delete('categories/{category}/filters/attributes/{attribute}', [CategoryFilterController::class, 'detachAttribute'])->name('categories.filters.attributes.detach');
 
-<<<<<<< HEAD
     Route::get('products/create', [ProductController::class, 'create'])
         ->name('products.create');
     Route::post('products', [ProductController::class, 'store'])

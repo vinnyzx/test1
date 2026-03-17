@@ -83,8 +83,26 @@
                 @php
                     $prodImg = $product->thumbnail ?? '';
                     $prodUrl = Str::startsWith($prodImg, ['http://', 'https://']) ? $prodImg : ($prodImg ? asset('storage/' . $prodImg) : 'https://placehold.co/400x400/f8f9fa/1a1a1a?text=BeePhone');
-                    $hasSale = $product->sale_price > 0 && $product->sale_price < $product->price;
-                    $discountPercent = $hasSale ? round((($product->price - $product->sale_price) / $product->price) * 100) : 15;
+                    
+                    // --- LOGIC LẤY GIÁ TỪ BIẾN THỂ HOẶC SP CHÍNH ---
+                    $finalPrice = $product->price;
+                    $finalSalePrice = $product->sale_price;
+                    $isVariable = false;
+
+                    if($product->type == 'variable' && $product->variants && $product->variants->count() > 0) {
+                        $isVariable = true;
+                        // Tìm biến thể có giá thấp nhất
+                        $minVariant = $product->variants->sortBy(function($v) {
+                            return ($v->sale_price > 0 && $v->sale_price < $v->price) ? $v->sale_price : $v->price;
+                        })->first();
+
+                        $finalPrice = $minVariant->price;
+                        $finalSalePrice = $minVariant->sale_price;
+                    }
+                    
+                    $hasSale = $finalSalePrice > 0 && $finalSalePrice < $finalPrice;
+                    $discountPercent = $hasSale ? round((($finalPrice - $finalSalePrice) / $finalPrice) * 100) : 15;
+                    $displayPrice = $hasSale ? $finalSalePrice : $finalPrice * 0.85; // 0.85 là trick của bạn cũ
                 @endphp
                 <div class="bg-white p-5 rounded-2xl card-shadow group relative overflow-hidden border-2 border-transparent hover:border-bee-dark transition-all duration-300">
                     <div class="absolute top-3 left-3 bg-bee-dark text-bee-yellow text-xs font-black px-2 py-1 rounded z-10 shadow-md">-{{ $discountPercent }}%</div>
@@ -101,9 +119,10 @@
                         <a href="{{ route('client.product.detail', $product->slug ?? $product->id) }}">
                             <h3 class="font-bold text-gray-800 mb-2 line-clamp-2 hover:text-bee-yellow transition-colors">{{ $product->name }}</h3>
                         </a>
-                        <div class="flex items-center gap-2">
-                            <span class="text-bee-dark font-black text-lg">{{ number_format($hasSale ? $product->sale_price : $product->price * 0.85, 0, ',', '.') }}đ</span>
-                            <span class="text-gray-400 text-sm line-through font-medium">{{ number_format($product->price, 0, ',', '.') }}đ</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            @if($isVariable) <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold">TỪ</span> @endif
+                            <span class="text-bee-dark font-black text-lg">{{ number_format($displayPrice, 0, ',', '.') }}đ</span>
+                            <span class="text-gray-400 text-sm line-through font-medium">{{ number_format($finalPrice, 0, ',', '.') }}đ</span>
                         </div>
                     </div>
                     <div class="mt-4 w-full bg-gray-100 rounded-full h-2.5 shadow-inner overflow-hidden">
@@ -174,7 +193,24 @@
                             $prodUrl = Str::startsWith($prodImg, 'storage/') ? asset($prodImg) : asset('storage/' . $prodImg);
                         }
                     }
-                    $hasSale = $product->sale_price > 0 && $product->sale_price < $product->price;
+                    
+                    // --- LOGIC LẤY GIÁ TỪ BIẾN THỂ HOẶC SP CHÍNH ---
+                    $finalPrice = $product->price;
+                    $finalSalePrice = $product->sale_price;
+                    $isVariable = false;
+
+                    if($product->type == 'variable' && $product->variants && $product->variants->count() > 0) {
+                        $isVariable = true;
+                        $minVariant = $product->variants->sortBy(function($v) {
+                            return ($v->sale_price > 0 && $v->sale_price < $v->price) ? $v->sale_price : $v->price;
+                        })->first();
+
+                        $finalPrice = $minVariant->price;
+                        $finalSalePrice = $minVariant->sale_price;
+                    }
+                    
+                    $hasSale = $finalSalePrice > 0 && $finalSalePrice < $finalPrice;
+                    $displayPrice = $hasSale ? $finalSalePrice : $finalPrice;
                 @endphp
                 
                 <div class="product-item bg-white p-6 rounded-2xl border border-bee-gray-border hover:border-bee-yellow hover:shadow-xl transition-all duration-300 group flex flex-col" data-brand="{{ $product->brand_id ?? 'none' }}">
@@ -188,10 +224,11 @@
                         <a href="{{ route('client.product.detail', $product->slug ?? $product->id) }}">
                             <h3 class="font-bold text-lg text-bee-dark mb-2 line-clamp-2 hover:text-bee-yellow transition-colors cursor-pointer">{{ $product->name }}</h3>
                         </a>
-                        <div class="flex items-center justify-center gap-3">
-                            <span class="text-red-500 font-bold text-lg">{{ number_format($hasSale ? $product->sale_price : $product->price, 0, ',', '.') }}đ</span>
+                        <div class="flex items-center justify-center gap-2 flex-wrap">
+                            @if($isVariable) <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold">TỪ</span> @endif
+                            <span class="text-red-500 font-bold text-lg">{{ number_format($displayPrice, 0, ',', '.') }}đ</span>
                             @if($hasSale)
-                                <span class="text-gray-300 text-sm line-through">{{ number_format($product->price, 0, ',', '.') }}đ</span>
+                                <span class="text-gray-300 text-sm line-through">{{ number_format($finalPrice, 0, ',', '.') }}đ</span>
                             @endif
                         </div>
                     </div>

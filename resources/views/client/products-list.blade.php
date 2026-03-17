@@ -98,9 +98,48 @@
                         @php
                             $prodImg = $product->thumbnail ?? '';
                             $prodUrl = Str::startsWith($prodImg, ['http://', 'https://']) ? $prodImg : ($prodImg ? asset('storage/' . $prodImg) : 'https://placehold.co/400x400/f8f9fa/1a1a1a?text=BeePhone');
-                            $hasSale = $product->sale_price > 0 && $product->sale_price < $product->price;
-                            $discountPercent = $hasSale ? round((($product->price - $product->sale_price) / $product->price) * 100) : 0;
-                            $priceStr = number_format($hasSale ? $product->sale_price : $product->price, 0, ',', '.') . 'đ';
+                            
+                            $finalPrice = $product->price;
+                            $finalSalePrice = $product->sale_price;
+                            $isVariable = false;
+
+                            // 1. TÍNH TOÁN GIÁ & LẤY THÔNG TIN BIẾN THỂ CHO BẢNG SO SÁNH
+                            $specsList = is_array($product->specifications) ? $product->specifications : (json_decode($product->specifications, true) ?? []);
+
+                            if($product->type == 'variable' && $product->variants && $product->variants->count() > 0) {
+                                $isVariable = true;
+                                $minVariant = $product->variants->sortBy(function($v) {
+                                    return ($v->sale_price > 0 && $v->sale_price < $v->price) ? $v->sale_price : $v->price;
+                                })->first();
+
+                                $finalPrice = $minVariant->price;
+                                $finalSalePrice = $minVariant->sale_price;
+
+                                // --- BẮT ĐẦU: GOM NHÓM BIẾN THỂ CHO SO SÁNH ---
+                                $colors = [];
+                                $rams = [];
+                                $roms = [];
+                                
+                                foreach($product->variants as $var) {
+                                    foreach($var->attributeValues as $val) {
+                                        $attrName = mb_strtolower($val->attribute->name ?? '');
+                                        if (str_contains($attrName, 'màu')) $colors[] = $val->value;
+                                        elseif (str_contains($attrName, 'ram')) $rams[] = $val->value;
+                                        elseif (str_contains($attrName, 'dung lượng') || str_contains($attrName, 'rom')) $roms[] = $val->value;
+                                    }
+                                }
+                                
+                                // Nếu có dữ liệu, thêm nó vào danh sách thông số $specsList
+                                if(!empty($rams)) $specsList['Các bản RAM'] = implode(', ', array_unique($rams));
+                                if(!empty($roms)) $specsList['Các bản ROM'] = implode(', ', array_unique($roms));
+                                if(!empty($colors)) $specsList['Màu sắc hiện có'] = implode(', ', array_unique($colors));
+                                // --- KẾT THÚC: GOM NHÓM ---
+                            }
+                            
+                            $hasSale = $finalSalePrice > 0 && $finalSalePrice < $finalPrice;
+                            $discountPercent = $hasSale ? round((($finalPrice - $finalSalePrice) / $finalPrice) * 100) : 0;
+                            $displayPrice = $hasSale ? $finalSalePrice : $finalPrice;
+                            $priceStr = number_format($displayPrice, 0, ',', '.') . 'đ';
                         @endphp
                         
                         <article class="group relative bg-white border border-border hover:border-bee-yellow hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden flex flex-col">
@@ -121,10 +160,11 @@
                                 </a>
                                 
                                 <div class="mt-auto">
-                                    <div class="flex items-baseline space-x-2">
+                                    <div class="flex items-baseline space-x-2 flex-wrap">
+                                        @if($isVariable) <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold">TỪ</span> @endif
                                         <span class="text-lg font-bold text-red-600">{{ $priceStr }}</span>
                                         @if($hasSale)
-                                            <span class="text-sm text-muted line-through">{{ number_format($product->price, 0, ',', '.') }}đ</span>
+                                            <span class="text-sm text-muted line-through">{{ number_format($finalPrice, 0, ',', '.') }}đ</span>
                                         @endif
                                     </div>
                                     
@@ -135,7 +175,7 @@
                                                 data-name="{{ $product->name }}" 
                                                 data-img="{{ $prodUrl }}"
                                                 data-price="{{ $priceStr }}"
-                                                data-specs="{{ json_encode($product->specifications ?? []) }}"
+                                                data-specs="{{ json_encode($specsList) }}"
                                             />
                                             <span class="text-xs font-medium text-muted group-hover/check:text-bee-dark">So sánh</span>
                                         </label>
@@ -186,7 +226,7 @@
         <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
             <h2 class="text-xl font-bold text-bee-dark uppercase flex items-center gap-2">
                 <svg class="w-6 h-6 text-bee-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                So sánh chi tiết cấu hình
+                So sánh chi tiết
             </h2>
             <button id="btn-close-modal" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-colors text-gray-600 font-bold">✕</button>
         </div>
@@ -260,13 +300,9 @@
                         return;
                     }
                     
-                    // THÊM TRY CATCH BẢO VỆ JS TRƯỚC LỖI PARSE JSON
                     let parsedSpecs = {};
-                    try {
-                        parsedSpecs = JSON.parse(this.getAttribute('data-specs') || '{}');
-                    } catch(err) {
-                        console.log('Sản phẩm này chưa có thông số cụ thể: ', err);
-                    }
+                    try { parsedSpecs = JSON.parse(this.getAttribute('data-specs') || '{}'); } 
+                    catch(err) { console.log('Lỗi thông số:', err); }
 
                     compareList.push({
                         id: id,
@@ -293,7 +329,13 @@
             
             let allSpecKeys = new Set();
             compareList.forEach(p => Object.keys(p.specs).forEach(k => allSpecKeys.add(k)));
-            const specKeysArray = Array.from(allSpecKeys);
+            
+            // Xếp các key quan trọng lên đầu bảng (Màu, RAM, ROM)
+            let sortedKeys = Array.from(allSpecKeys).sort((a, b) => {
+                let priorityA = a.includes('RAM') ? 1 : (a.includes('ROM') ? 2 : (a.includes('Màu') ? 3 : 99));
+                let priorityB = b.includes('RAM') ? 1 : (b.includes('ROM') ? 2 : (b.includes('Màu') ? 3 : 99));
+                return priorityA - priorityB;
+            });
 
             let theadHTML = `<thead><tr><th class="p-4 border border-gray-200 w-1/5 bg-gray-50 text-gray-500 uppercase text-xs">Thông số</th>`;
             compareList.forEach(p => {
@@ -307,7 +349,7 @@
             theadHTML += `</tr></thead>`;
 
             let tbodyHTML = `<tbody>`;
-            specKeysArray.forEach(key => {
+            sortedKeys.forEach(key => {
                 tbodyHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-3 border border-gray-200 font-bold text-gray-700 bg-gray-50">${key}</td>`;
                 compareList.forEach(p => {
                     let val = p.specs[key];

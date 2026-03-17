@@ -144,7 +144,7 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::delete('products/{id}/force-delete', [AdminProductController::class, 'forceDelete'])->name('products.force_delete');
         Route::get('products/create', [AdminProductController::class, 'create'])->name('products.create');
         Route::post('products', [AdminProductController::class, 'store'])->name('products.store');
-        Route::resource('products', AdminProductController::class)->except(['create', 'store']); 
+        Route::resource('products', AdminProductController::class)->except(['create', 'store']);
 
         // 6. Quản lý Vouchers
         Route::post('vouchers/{id}/restore', [VoucherController::class, 'restore'])->name('vouchers.restore');
@@ -169,6 +169,5 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
         Route::post('/wallets/update-balance', [WalletController::class, 'updateBalance'])->name('wallets.update');
         Route::get('/wallets/{id}/history', [WalletController::class, 'history'])->name('wallets.history');
-        
     });
 });

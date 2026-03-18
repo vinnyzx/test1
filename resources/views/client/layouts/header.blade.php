@@ -21,12 +21,94 @@
                     class="w-full h-10 pl-10 pr-4 rounded-lg border-none bg-[#f5f3f0] dark:bg-white/5 focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Tìm kiếm sản phẩm..." type="text" />
             </div>
+
             <div class="flex gap-2">
-                <button
-                    class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f5f3f0] dark:bg-white/5 hover:bg-primary transition-colors group">
-                    <span
-                        class="material-symbols-outlined text-[#181611] dark:text-white group-hover:text-black">person</span>
-                </button>
+                <div class="relative group">
+                    <button
+                        class="flex items-center justify-center rounded-lg h-10 w-10 dark:bg-white/5 hover:bg-primary transition-colors overflow-hidden">
+                        @auth
+                            @if (Auth::user()->avatar)
+                                <div class="w-10 h-10 rounded-full bg-slate-300 overflow-hidden shrink-0"
+                                    data-alt="Avatar của {{ Auth::user()->name }}"
+                                    style="background-image: url('{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}'); background-size: cover; background-position: center;">
+                                </div>
+                            @else
+                                <span class="font-bold text-lg text-[#181611] dark:text-white uppercase">
+                                    {{ Str::substr(Auth::user()->name, 0, 1) }}
+                                </span>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}">
+                                <span
+                                    class="material-symbols-outlined text-[#181611] dark:text-white group-hover:text-black">
+                                    person
+                                </span>
+                            </a>
+                        @endauth
+
+                    </button>
+
+                    @auth
+                        <div
+                            class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100">
+
+                            <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 mb-1">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                    {{ Auth::user()->name }}
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}</p>
+                            </div>
+
+                            <ul class="flex flex-col">
+                                <li>
+                                    <a href="{{route('profile.index')}}"
+                                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">person</span>
+                                        Tài khoản của tôi
+                                    </a>
+                                </li>
+                                {{-- <li>
+                                    <a href="#"
+                                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                                        Đơn mua
+                                    </a>
+                                </li> --}}
+
+                                <hr class="my-1 border-gray-100 dark:border-gray-700">
+
+                                <li>
+                                    <a href="{{ route('logout') }}"
+                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left">
+                                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                                        Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    @endauth
+                </div>
+                {{-- <button
+                    class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f5f3f0] dark:bg-white/5 hover:bg-primary transition-colors group overflow-hidden">
+                    @auth
+                        @if (Auth::user()->avatar)
+                            <div class="w-10 h-10 rounded-full bg-slate-300 overflow-hidden shrink-0"
+                                data-alt="Avatar của {{ Auth::user()->name }}"
+                                style="background-image: url('{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}'); background-size: cover; background-position: center;">
+                            </div>
+                        @else
+                            <span class="font-bold text-lg text-[#181611] dark:text-white group-hover:text-black uppercase">
+                                {{ Str::substr(Auth::user()->name, 0, 1) }}
+                            </span>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}">
+                            <span class="material-symbols-outlined text-[#181611] dark:text-white group-hover:text-black">
+                                person
+                            </span>
+                        </a>
+                    @endauth
+                </button> --}}
                 <button
                     class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f5f3f0] dark:bg-white/5 hover:bg-primary transition-colors group relative">
                     <span

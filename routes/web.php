@@ -23,7 +23,8 @@ use App\Http\Controllers\AdminControllers\OrderController;
 use App\Http\Controllers\AdminControllers\PostController;
 use App\Http\Controllers\AdminControllers\PostCategoryController;
 use App\Http\Controllers\AdminControllers\WalletController;
-
+use App\Http\Controllers\Client\PaymentController;
+use App\Http\Controllers\Client\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,7 +44,12 @@ Route::middleware('check.verified')->group(function(){
     // Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.products.index');
 
     // Thông tin tài khoản
-    // Route::resource('profile', ProfileController::class);
+    Route::get('profile/wallet',[ProfileController::class,'user_wallet'])->name('profile.wallet');
+    Route::resource('profile', ProfileController::class);
+
+
+    Route::post('/wallet/deposit',[PaymentController::class,'createDeposit'])->name('wallet.deposit');
+    Route::get('vnpay/response',[PaymentController::class,'vnpay_response'])->name('wallet.deposit');
 });
 
 

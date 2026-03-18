@@ -53,6 +53,7 @@ class User extends Authenticatable  implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birthday' => 'date',
         ];
     }
 
@@ -100,5 +101,8 @@ class User extends Authenticatable  implements MustVerifyEmail
     public function wallet()
     {
         return $this->hasOne(Wallet::class);
+    }
+    public function orders(){
+        return $this->hasMany(Order::class);
     }
 }

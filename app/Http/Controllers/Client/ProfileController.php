@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +14,9 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
+        if(!$user){
+            return abort(404);
+        }
         return view('client.profiles.index')->with([
             'user' => $user
         ]);
@@ -64,5 +68,15 @@ class ProfileController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function user_wallet(){
+        $user = Auth::user();
+        if(!$user){
+            return abort(404);
+        }
+        return view('client.profiles.wallet')->with([
+            'user' => $user
+        ]);
     }
 }

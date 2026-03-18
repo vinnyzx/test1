@@ -25,6 +25,8 @@ use App\Http\Controllers\AdminControllers\PostCategoryController;
 use App\Http\Controllers\AdminControllers\WalletController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\WalletController as ClientWalletController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -50,6 +52,10 @@ Route::middleware('check.verified')->group(function(){
     // Nạp ví
     Route::post('/wallet/deposit',[PaymentController::class,'createDeposit'])->name('wallet.deposit');
     Route::get('vnpay/response',[PaymentController::class,'vnpay_response'])->name('wallet.deposit');
+
+    // Rút ví
+    Route::post('/wallet/withdrawal',[ClientWalletController::class,'withdrawalPost'])->name('wallet.withdrawal');
+    Route::post('/wallet/withdrawal/cancelled/{id}',[ClientWalletController::class,'withdrawalCancelled'])->name('wallet.withdrawal.cancelled');
 });
 
 

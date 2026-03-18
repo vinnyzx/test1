@@ -25,6 +25,7 @@ use App\Http\Controllers\AdminControllers\PostCategoryController;
 use App\Http\Controllers\AdminControllers\WalletController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\CartController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -50,6 +51,14 @@ Route::middleware('check.verified')->group(function(){
     // Nạp ví
     Route::post('/wallet/deposit',[PaymentController::class,'createDeposit'])->name('wallet.deposit');
     Route::get('vnpay/response',[PaymentController::class,'vnpay_response'])->name('wallet.deposit');
+    // QUẢN LÝ GIỎ HÀNG
+Route::post('/cart/add', [CartController::class, 'add'])->name('client.cart.add');
+Route::get('/cart/count', [CartController::class, 'count'])->name('client.cart.count');
+
+// THÊM 3 DÒNG NÀY:
+Route::get('/gio-hang', [CartController::class, 'index'])->name('client.cart.index');
+Route::post('/cart/update', [CartController::class, 'update'])->name('client.cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('client.cart.remove');
 });
 
 

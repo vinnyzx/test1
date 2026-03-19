@@ -221,7 +221,8 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    {{ $log->description }} @if ($log->model)
+                                    {{ $log->description }}
+                                    @if ($log->model)
                                         - <a class="text-blue-500" href="#">{{ $log->model->name ?? '' }}</a>
                                     @endif
                                 </p>

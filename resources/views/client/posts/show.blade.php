@@ -97,7 +97,7 @@
                         </p>
                     </article>
                     <!-- Comments Section -->
-                    <section class="border-t border-[#f5f3f0] dark:border-gray-800 pt-10" id="comments">
+                    {{-- <section class="border-t border-[#f5f3f0] dark:border-gray-800 pt-10" id="comments">
                         <h3 class="text-2xl font-bold mb-8 flex items-center gap-2">
                             Bình luận <span class="text-primary">(12)</span>
                         </h3>
@@ -180,7 +180,7 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </section> --}}
                 </div>
                 <!-- Sidebar: Ads & Products -->
                 <aside class="w-full lg:w-[340px] space-y-8">

@@ -40,7 +40,7 @@ use App\Http\Controllers\Client\ChatbotController;
 // HỆ THỐNG CLIENT (Public)
 // ==========================================
 
-Route::middleware('check.verified')->group(function(){
+Route::middleware('check.verified')->group(function () {
     // Trang chủ
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -49,12 +49,12 @@ Route::middleware('check.verified')->group(function(){
     Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.products.index');
 
     // Thông tin tài khoản
-    Route::get('profile/wallet',[ProfileController::class,'user_wallet'])->name('profile.wallet');
+    Route::get('profile/wallet', [ProfileController::class, 'user_wallet'])->name('profile.wallet');
     Route::resource('profile', ProfileController::class);
 
     // Nạp ví
-    Route::post('/wallet/deposit',[ClientWalletController::class,'createDeposit'])->name('wallet.deposit');
-    Route::get('vnpay/response',[PaymentController::class,'vnpay_response'])->name('wallet.deposit');
+    Route::post('/wallet/deposit', [ClientWalletController::class, 'createDeposit'])->name('wallet.deposit');
+    Route::get('vnpay/response', [PaymentController::class, 'vnpay_response'])->name('wallet.deposit');
 
     // Rút ví
     Route::post('/wallet/withdrawal',[ClientWalletController::class,'withdrawalPost'])->name('wallet.withdrawal');

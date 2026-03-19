@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
+
     protected $fillable = [
         'order_code',
         'user_id',
@@ -33,7 +34,10 @@ class Order extends Model
         'cancelled_at',
         'return_requested_at',
         'return_confirmed_at',
+
+
     ];
+    
 
     protected $casts = [
         'ordered_at' => 'datetime',

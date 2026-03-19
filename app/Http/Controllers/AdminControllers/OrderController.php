@@ -66,7 +66,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, Order $order): RedirectResponse
+  public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $validated = $request->validate([
             'status' => ['required', 'string', 'in:' . implode(',', Order::statuses())],
@@ -77,6 +77,13 @@ class OrderController extends Controller
         if ($nextStatus === Order::STATUS_CANCELLED) {
             throw ValidationException::withMessages([
                 'status' => 'Vui lòng dùng chức năng hủy đơn để nhập lý do hủy.',
+            ]);
+        }
+
+        // THÊM ĐOẠN NÀY VÀO: Báo lỗi nếu Admin cố tình truyền trạng thái Đã nhận
+        if ($nextStatus === Order::STATUS_RECEIVED) {
+            throw ValidationException::withMessages([
+                'status' => 'Trạng thái này là đặc quyền của Khách hàng. Admin chỉ được cập nhật đến Đã Giao Hàng!',
             ]);
         }
 
@@ -153,12 +160,18 @@ class OrderController extends Controller
         return $pdf->download('don-hang-' . $order->order_code . '.pdf');
     }
 
-    private function availableStatusesFor(Order $order): array
+   private function availableStatusesFor(Order $order): array
     {
         $statuses = [$order->status];
 
         foreach (Order::statuses() as $status) {
-            if ($order->canMoveTo($status) && !in_array($status, $statuses, true) && $status !== Order::STATUS_CANCELLED) {
+            // Lọc ra các trạng thái hợp lệ, NHƯNG cấm Admin chọn Hủy và Đã Nhận Hàng
+            if (
+                $order->canMoveTo($status) && 
+                !in_array($status, $statuses, true) && 
+                $status !== Order::STATUS_CANCELLED &&
+                $status !== Order::STATUS_RECEIVED // THÊM DÒNG NÀY ĐỂ CHẶN ADMIN
+            ) {
                 $statuses[] = $status;
             }
         }

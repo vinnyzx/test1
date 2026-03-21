@@ -5,17 +5,20 @@ namespace App\Http\Controllers\AdminControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AttributeController extends Controller
 {
     public function index()
     {
+        Gate::authorize('attribute.view'); // Kiểm tra quyền xem thuộc tính
         $attributes = Attribute::with('values')->orderBy('id', 'desc')->get();
         return view('admin.attributes.index', compact('attributes'));
     }
 
     public function store(Request $request)
     {
+        Gate::authorize('attribute.create');
         $request->validate([
             'name' => 'required|string|max:255|unique:attributes,name'
         ]);
@@ -29,6 +32,7 @@ class AttributeController extends Controller
 
     public function update(Request $request, Attribute $attribute)
     {
+        Gate::authorize('attribute.update');
         $request->validate([
             'name' => 'required|string|max:255|unique:attributes,name,' . $attribute->id
         ]);
@@ -42,12 +46,14 @@ class AttributeController extends Controller
 
     public function destroy(Attribute $attribute)
     {
+        Gate::authorize('attribute.delete');
         $attribute->delete(); // Soft delete do bro đã khai báo trong migration
         return back()->with('success', 'Đã xóa thuộc tính!');
     }
 
     public function trash()
     {
+        Gate::authorize('attribute.delete');
         // Lấy các thuộc tính đã bị xóa mềm (chỉ những cái có deleted_at)
         $trashedAttributes = Attribute::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
         return view('admin.attributes.trash', compact('trashedAttributes'));
@@ -56,6 +62,7 @@ class AttributeController extends Controller
     // Khôi phục thuộc tính
     public function restore($id)
     {
+        Gate::authorize('attribute.delete');
         $attribute = Attribute::onlyTrashed()->findOrFail($id);
         $attribute->restore(); // Phục hồi
 
@@ -65,11 +72,12 @@ class AttributeController extends Controller
     // Xóa vĩnh viễn
     public function forceDelete($id)
     {
+        Gate::authorize('attribute.delete');
         $attribute = Attribute::onlyTrashed()->findOrFail($id);
-        
+
         // Cẩn thận: Phải xóa vĩnh viễn các giá trị con (Đỏ, Xanh...) trước để tránh mồ côi data
-        $attribute->values()->forceDelete(); 
-        
+        $attribute->values()->forceDelete();
+
         // Xóa thuộc tính
         $attribute->forceDelete();
 

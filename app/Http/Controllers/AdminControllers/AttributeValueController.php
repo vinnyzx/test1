@@ -7,7 +7,7 @@ use App\Models\Attribute;
 use App\Models\AttributeValue;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\Gate;
 class AttributeValueController extends Controller
 {
     // 1. Xem danh sách giá trị (Terms)
@@ -27,11 +27,12 @@ class AttributeValueController extends Controller
     }
 
     // 2. Thêm giá trị mới
-  
+
 
     // 3. Xóa mềm (Cho vào thùng rác) - CHỈ CÓ ĐÚNG 1 HÀM NÀY
     public function destroy(AttributeValue $attribute_value)
     {
+        Gate::authorize('attribute.delete');
         $attribute_value->delete(); // Xóa mềm
         return back()->with('success', 'Đã chuyển giá trị vào thùng rác!');
     }
@@ -39,6 +40,7 @@ class AttributeValueController extends Controller
     // Hiển thị form sửa
     public function edit(Attribute $attribute, AttributeValue $attribute_value)
     {
+        Gate::authorize('attribute.update');
         return view('admin.attributes.values_edit', compact('attribute', 'attribute_value'));
     }
 
@@ -46,6 +48,7 @@ class AttributeValueController extends Controller
    // 1. HÀM THÊM MỚI (Vừa chống trùng tên, vừa chống trùng số thứ tự)
     public function store(Request $request, Attribute $attribute)
     {
+
         $request->validate([
             'value' => [
                 'required',
@@ -107,7 +110,7 @@ class AttributeValueController extends Controller
         $attribute_value->update([
             'value' => $request->value,
             // Nếu để trống lúc sửa thì giữ nguyên số cũ
-            'sort_order' => $request->sort_order ?? $attribute_value->sort_order 
+            'sort_order' => $request->sort_order ?? $attribute_value->sort_order
         ]);
 
         return redirect()->route('admin.attributes.values.index', $attribute->id)
@@ -121,6 +124,7 @@ class AttributeValueController extends Controller
     // 4. Xem thùng rác
     public function trash(Attribute $attribute)
     {
+        Gate::authorize('attribute.delete');
         $trashedValues = $attribute->values()->onlyTrashed()->orderBy('deleted_at', 'desc')->get();
         return view('admin.attributes.values_trash', compact('attribute', 'trashedValues'));
     }
@@ -128,23 +132,25 @@ class AttributeValueController extends Controller
     // 5. Khôi phục từ thùng rác
     public function restore($id)
     {
+        Gate::authorize('attribute.delete');
         $value = AttributeValue::onlyTrashed()->findOrFail($id);
         $value->restore();
-        
+
         return back()->with('success', 'Đã khôi phục giá trị: ' . $value->value);
     }
 
     // 6. Xóa vĩnh viễn
     public function forceDelete($id)
     {
+        Gate::authorize('attribute.delete');
         $value = AttributeValue::onlyTrashed()->findOrFail($id);
-        
+
         // Gỡ liên kết với bảng biến thể trước khi xóa vĩnh viễn (Rất quan trọng)
-        $value->variants()->detach(); 
-        
+        $value->variants()->detach();
+
         // Xóa tận gốc
         $value->forceDelete();
-        
+
         return back()->with('success', 'Đã xóa vĩnh viễn giá trị này!');
     }
 }

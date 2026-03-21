@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -14,6 +15,7 @@ class BrandController extends Controller
 {
     public function index(): View
     {
+        Gate::authorize('brand.view');
         $brands = Brand::query()
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -26,6 +28,7 @@ class BrandController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('brand.create');
         return view('admin.categories.brands.create');
     }
 
@@ -50,6 +53,7 @@ class BrandController extends Controller
 
     public function edit(Brand $brand): View
     {
+        Gate::authorize('brand.update');
         return view('admin.categories.brands.edit', [
             'brand' => $brand,
         ]);

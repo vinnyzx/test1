@@ -61,7 +61,7 @@
                             // KHAI BÁO BIẾN PHÂN TRANG Ở ĐÂY ĐỂ TRÁNH LỖI LINKS()
                             $paginatedTransactions = $user->wallet->transactions()->latest()->paginate(4);
                         @endphp
-                        
+
                         @if ($paginatedTransactions->count() != 0)
                             @foreach ($paginatedTransactions as $transaction)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
@@ -188,6 +188,7 @@
                     </tbody>
 
                 </table>
+
                 <div class="p-4 border-t border-gray-100">
                     {{-- SỬ DỤNG BIẾN MỚI ĐỂ GỌI LINKS() CHUẨN XÁC --}}
                     {{ $paginatedTransactions->links() }}

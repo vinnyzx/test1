@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Gate;
 class VoucherController extends Controller
 {
     /**
@@ -17,6 +17,7 @@ class VoucherController extends Controller
      */
     public function index()
     {
+        Gate::authorize('voucher.view');
         $query = Voucher::orderBy('id', 'desc');
 
         if (request('deleted') == 'trash') {
@@ -35,6 +36,7 @@ class VoucherController extends Controller
      */
     public function create()
     {
+        Gate::authorize('voucher.create');
         $brands = Brand::all();
         $products = Product::all();
         $categories = Category::all();
@@ -89,7 +91,7 @@ class VoucherController extends Controller
      */
     public function show(string $id)
     {
-
+        Gate::authorize('voucher.view');
         $voucher = Voucher::findOrFail($id);
         $products = Product::all();
         $categories = Category::all();
@@ -107,6 +109,7 @@ class VoucherController extends Controller
      */
     public function edit(string $id)
     {
+        Gate::authorize('voucher.update');
         $voucher = Voucher::findOrFail($id);
         $products = Product::all();
         $categories = Category::all();
@@ -146,6 +149,7 @@ class VoucherController extends Controller
      */
     public function destroy(string $id)
     {
+        Gate::authorize('voucher.delete');
         $voucher = Voucher::findOrFail($id);
         $voucher->delete();
         return back()->with([
@@ -154,6 +158,7 @@ class VoucherController extends Controller
     }
     public function restore($id)
     {
+        Gate::authorize('voucher.delete');
         $voucher = Voucher::withTrashed()->findOrFail($id);
         $voucher->restore();
         return back()->with('success', 'Đã khôi phục');

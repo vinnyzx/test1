@@ -13,6 +13,7 @@ use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Gate;
 class UserController extends Controller
 {
     /**
@@ -20,6 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        Gate::authorize('customer.view');
         $query = User::orderBy('id', 'desc');
         $users = $query->paginate(10);
         $totalStaff = User::whereHas('role', function ($query) {
@@ -103,6 +105,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
+        Gate::authorize('customer.view');
         $user = User::findOrFail($id);
         return view('admin.users.show')->with([
             'user' => $user,
@@ -114,6 +117,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        Gate::authorize('customer.update');
         $roles = Role::select('id', 'name')->get();
         $user = User::findOrFail($id);
         $permissions = Permission::all();
@@ -194,6 +198,7 @@ class UserController extends Controller
     }
     public function block($id)
     {
+        Gate::authorize('customer.lock');
         $user = User::findOrFail($id);
         $user->update([
             'status' => 'banned'
@@ -202,6 +207,7 @@ class UserController extends Controller
     }
     public function unBlock($id)
     {
+        Gate::authorize('customer.lock');
         $user = User::findOrFail($id);
         $user->update([
             'status' => 'active'

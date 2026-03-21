@@ -11,11 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-
+use Illuminate\Support\Facades\Gate;
 class CategoryController extends Controller
 {
     public function index(Request $request): View
     {
+        Gate::authorize('category.view');
         $requestedMode = $request->string('mode')->toString();
 
         if ($requestedMode === 'brands') {
@@ -80,6 +81,7 @@ class CategoryController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('category.create');
         return view('admin.categories.create', [
             'categoryOptions' => $this->categoryOptions(),
         ]);
@@ -100,6 +102,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category): View
     {
+        Gate::authorize('category.update');
         return view('admin.categories.edit', [
             'category' => $category,
             'categoryOptions' => $this->categoryOptions($category->id),
@@ -128,6 +131,7 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
+        Gate::authorize('category.delete');
         $category->delete();
 
         return redirect()
@@ -137,6 +141,7 @@ class CategoryController extends Controller
 
     public function trash(): View
     {
+        Gate::authorize('category.delete');
         $categories = Category::onlyTrashed()
             ->with('parent')
             ->withCount('children')
@@ -153,6 +158,7 @@ class CategoryController extends Controller
 
     public function restore(int $id): RedirectResponse
     {
+        Gate::authorize('category.delete');
         $category = Category::onlyTrashed()->findOrFail($id);
         $category->restore();
 
@@ -163,6 +169,7 @@ class CategoryController extends Controller
 
     public function forceDelete(int $id): RedirectResponse
     {
+        Gate::authorize('category.delete');
         $category = Category::onlyTrashed()->findOrFail($id);
         $category->forceDelete();
 

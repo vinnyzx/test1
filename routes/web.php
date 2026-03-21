@@ -208,14 +208,14 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::resource('vouchers', VoucherController::class);
 
         // 7. Quản lý Đơn hàng (QUYỀN ORDER VIEW ĐƯỢC CHUYỂN VÀO ĐÂY)
-        Route::middleware('can:order.view')->group(function () {
-            Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
-            Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-            Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status.update');
-            Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-            Route::patch('orders/{order}/return-confirm', [OrderController::class, 'confirmReturn'])->name('orders.return.confirm');
-            Route::get('orders/{order}/print-pdf', [OrderController::class, 'printPdf'])->name('orders.print.pdf');
-        });
+
+        Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status.update');
+        Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::patch('orders/{order}/return-confirm', [OrderController::class, 'confirmReturn'])->name('orders.return.confirm');
+        Route::get('orders/{order}/print-pdf', [OrderController::class, 'printPdf'])->name('orders.print.pdf');
+
 
         // 8. Quản lý bài viết
         Route::resource('posts', PostController::class);

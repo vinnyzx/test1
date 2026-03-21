@@ -9,11 +9,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-
+use Illuminate\Support\Facades\Gate;
 class OrderController extends Controller
 {
     public function index(Request $request): View
     {
+        Gate::authorize('order.view');
         $status = $request->string('status')->toString();
         $returnStatus = $request->string('return_status')->toString();
         $search = $request->string('q')->toString();
@@ -65,6 +66,7 @@ class OrderController extends Controller
 
   public function updateStatus(Request $request, Order $order): RedirectResponse
     {
+        Gate::authorize('order.update');
         $validated = $request->validate([
             'status' => ['required', 'string', 'in:' . implode(',', Order::statuses())],
         ]);
@@ -97,6 +99,7 @@ class OrderController extends Controller
 
     public function cancel(Request $request, Order $order): RedirectResponse
     {
+        Gate::authorize('order.cancel');
         $validated = $request->validate([
             'cancellation_reason' => ['required', 'string', 'max:1000'],
         ]);

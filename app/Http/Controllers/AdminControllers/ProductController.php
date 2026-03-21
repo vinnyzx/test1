@@ -8,18 +8,22 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Attribute;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function index()
     {
+        Gate::authorize('product.view'); // kiểm tra Quyền xem sản phẩm
         $products = Product::with(['categories', 'brand'])->orderBy('id', 'desc')->get();
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
+        Gate::authorize('product.create'); // Kiểm tra quyền thêm sản phẩm
         $categories = Category::all();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
@@ -32,6 +36,7 @@ class ProductController extends Controller
     // ==========================================
     public function store(Request $request)
     {
+        Gate::authorize('product.create'); // Kiểm tra quyền thêm sản phẩm
         $request->validate([
             'name' => 'required|string|max:255',
             'category_ids' => 'required|array',
@@ -128,12 +133,14 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+
         $product->load(['categories', 'brand', 'images', 'variants.attributeValues']);
         return view('admin.products.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
+        Gate::authorize('product.update'); // Kiểm tra quyền cập nhập
         $product->load(['categories', 'images', 'variants.attributeValues']);
 
         $categories = Category::all();
@@ -148,6 +155,7 @@ class ProductController extends Controller
     // ==========================================
     public function update(Request $request, Product $product)
     {
+        Gate::authorize('product.update'); // Kiểm tra quyền cập nhập
         $request->validate([
             'name' => 'required|string|max:255',
             'category_ids' => 'required|array',
@@ -279,18 +287,21 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        Gate::authorize('product.delete'); // Kiêm tra quyền xóa
         $product->delete();
         return back()->with('success', 'Đã chuyển sản phẩm vào thùng rác!');
     }
 
     public function trash()
     {
+        Gate::authorize('product.delete'); // Kiêm tra quyền xóa
         $trashedProducts = Product::onlyTrashed()->with(['categories', 'brand'])->orderBy('deleted_at', 'desc')->get();
         return view('admin.products.trash', compact('trashedProducts'));
     }
 
     public function restore($id)
     {
+        Gate::authorize('product.delete'); // Kiêm tra quyền xóa
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->restore();
         return back()->with('success', 'Đã khôi phục sản phẩm: ' . $product->name);
@@ -298,6 +309,7 @@ class ProductController extends Controller
 
     public function forceDelete($id)
     {
+        Gate::authorize('product.delete'); // Kiêm tra quyền xóa
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->forceDelete();
         return back()->with('success', 'Đã xóa vĩnh viễn sản phẩm!');

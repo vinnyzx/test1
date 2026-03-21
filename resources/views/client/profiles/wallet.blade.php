@@ -15,7 +15,7 @@
                     <div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Số dư hiện tại trong hệ thống</p>
                         <h2 class="text-5xl font-bold tracking-tight">
-                            {{ number_format($user->wallet->balance, 0, ',', '.') }}<span
+                            {{ number_format($user->wallet->balance, 0, ',', '.') ?? '' }}<span
                                 class="text-2xl ml-1 text-[#f4c025]">đ</span></h2>
                     </div>
                     <div class="flex flex-wrap gap-4">

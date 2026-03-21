@@ -39,7 +39,6 @@ class PointController extends Controller
     }
 
     // 2. Xử lý đổi điểm lấy Mã giảm giá
-   // 2. Xử lý đổi điểm lấy Mã giảm giá
     public function redeem(Request $request)
     {
         $request->validate(['voucher_id' => 'required|exists:vouchers,id']);
@@ -72,7 +71,7 @@ class PointController extends Controller
             $pointCost = ceil(($voucher->max_discount ?: 50000) / $redeemRate);
         }
 
-        if ($user->total_points < $pointCost) {
+        if ($user->reward_points < $pointCost) {
             return back()->with('error', 'Rất tiếc! Bạn không đủ Bee Point để đổi mã này.');
         }
 
@@ -92,6 +91,10 @@ class PointController extends Controller
 
             // 2. Lưu voucher vào kho của khách
             $voucher->users()->attach($user->id);
+
+            // 3. TRỪ ĐIỂM TRỰC TIẾP VÀO BẢNG USERS
+            $user->reward_points -= $pointCost;
+            $user->save();
 
             DB::commit();
             return back()->with('success', 'Tuyệt vời! Bạn đã đổi thành công mã ' . $voucher->code . '. Mã đã được lưu vào kho của bạn.');

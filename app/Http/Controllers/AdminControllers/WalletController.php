@@ -12,12 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class WalletController extends Controller
 {
-    // 1. Hiển thị danh sách ví của tất cả User
+    // 1. Hiển thị danh sách ví
     public function index(Request $request)
     {
         $search = $request->input('search');
 
-        // Lấy danh sách user, nếu có search thì lọc theo name hoặc email
         $users = User::with('wallet')
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
@@ -25,87 +24,152 @@ class WalletController extends Controller
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->withQueryString(); // Rất quan trọng: Giữ lại từ khóa search khi bấm sang trang 2, 3
+            ->withQueryString();
 
         return view('admin.wallets.index', compact('users', 'search'));
     }
 
-    // 2. Xử lý cộng/trừ tiền (Admin nạp/phạt tiền user)
-    public function updateBalance(Request $request)
+    // 2. Xử lý cộng/trừ tiền (Chuẩn hóa Database)
+    public function update(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1000',
             'action' => 'required|in:add,subtract',
-            'description' => 'nullable|string|max:255'
+            'description' => 'required|string|max:255'
         ]);
 
+        $amount = $request->amount;
+        $userWallet = Wallet::firstOrCreate(['user_id' => $request->user_id], ['balance' => 0, 'status' => 'active']);
+        $systemWallet = Wallet::firstOrCreate(['user_id' => 1], ['balance' => 0, 'status' => 'active']);
+
+        DB::beginTransaction();
         try {
-            // Sử dụng DB Transaction để đảm bảo tính toàn vẹn dữ liệu
-            DB::transaction(function () use ($request) {
-                // TỰ ĐỘNG TẠO VÍ: Nếu user cũ chưa có ví, hệ thống sẽ tự tạo 1 ví với số dư = 0
-                $wallet = Wallet::firstOrCreate(
-                    ['user_id' => $request->user_id],
-                    ['balance' => 0, 'status' => 'active']
-                );
+            // Khóa dòng chống trùng lặp (Pessimistic Locking)
+            $userWallet = Wallet::where('id', $userWallet->id)->lockForUpdate()->first();
+            $systemWallet = Wallet::where('id', $systemWallet->id)->lockForUpdate()->first();
 
-                // KHÓA DÒNG (Pessimistic Locking): Tránh lỗi 2 Admin cùng cộng tiền 1 lúc
-                $wallet = Wallet::where('id', $wallet->id)->lockForUpdate()->first();
+            $userBalanceBefore = $userWallet->balance;
+            $sysBalanceBefore = $systemWallet->balance;
 
-                $amount = $request->amount;
-                $balanceBefore = $wallet->balance;
+            if ($request->action === 'add') {
+                // NẠP: Trừ ví tổng, cộng ví khách
+                $systemWallet->balance -= $amount;
+                $userWallet->balance += $amount;
 
-                // Xử lý logic Cộng hoặc Trừ
-                if ($request->action == 'add') {
-                    $wallet->balance += $amount;
-                    $type = 'deposit';
-                    $desc = $request->description ?? 'Nạp tiền';
-                } else {
-                    if ($wallet->balance < $amount) {
-                        throw new \Exception('Số dư ví không đủ để trừ!');
-                    }
-                    $wallet->balance -= $amount;
-                    $type = 'withdraw';
-                    $desc = $request->description ?? 'Trừ tiền';
-                }
-
-                $wallet->save();
-
-                // Lưu lịch sử giao dịch
+                // Log Ví Tổng (Xuất tiền)
                 WalletTransaction::create([
-                    'wallet_id' => $wallet->id,
-                    'type' => $type,
-                    'amount' => $amount,
-                    'balance_before' => $balanceBefore,
-                    'balance_after' => $wallet->balance,
-                    'description' => $desc,
+                    'wallet_id' => $systemWallet->id, 
+                    'type' => 'withdraw', // Dùng withdraw cho hợp lệ enum của DB
+                    'amount' => $amount, 
+                    'balance_before' => $sysBalanceBefore, 
+                    'balance_after' => $systemWallet->balance, 
+                    'description' => 'Chuyển tiền cho User ID ' . $request->user_id . ': ' . $request->description, 
                     'reference_type' => get_class(Auth::user()),
                     'reference_id' => Auth::user()->id,
                     'status' => 'completed'
                 ]);
-            });
+                
+                // Log Ví Khách (Nhận tiền)
+                WalletTransaction::create([
+                    'wallet_id' => $userWallet->id, 
+                    'type' => 'deposit', 
+                    'amount' => $amount, 
+                    'balance_before' => $userBalanceBefore, 
+                    'balance_after' => $userWallet->balance, 
+                    'description' => 'Nhận tiền hỗ trợ: ' . $request->description, 
+                    'reference_type' => get_class(Auth::user()),
+                    'reference_id' => Auth::user()->id,
+                    'status' => 'completed'
+                ]);
+                
+                $msg = 'Đã cộng tiền cho khách thành công!';
+            } else {
+                // TRỪ: Trừ ví khách, cộng lại ví tổng
+                if ($userWallet->balance < $amount) {
+                    throw new \Exception('Số dư ví khách hàng không đủ để trừ!');
+                }
+                $systemWallet->balance += $amount;
+                $userWallet->balance -= $amount;
 
-            return back()->with('success', 'Cập nhật số dư thành công!');
+                // Log Ví Tổng (Thu hồi)
+                WalletTransaction::create([
+                    'wallet_id' => $systemWallet->id, 
+                    'type' => 'deposit', 
+                    'amount' => $amount, 
+                    'balance_before' => $sysBalanceBefore, 
+                    'balance_after' => $systemWallet->balance, 
+                    'description' => 'Thu hồi tiền từ User ID ' . $request->user_id . ': ' . $request->description, 
+                    'reference_type' => get_class(Auth::user()),
+                    'reference_id' => Auth::user()->id,
+                    'status' => 'completed'
+                ]);
+                
+                // Log Ví Khách (Bị trừ)
+                WalletTransaction::create([
+                    'wallet_id' => $userWallet->id, 
+                    'type' => 'withdraw', 
+                    'amount' => $amount, 
+                    'balance_before' => $userBalanceBefore, 
+                    'balance_after' => $userWallet->balance, 
+                    'description' => 'Bị trừ tiền: ' . $request->description, 
+                    'reference_type' => get_class(Auth::user()),
+                    'reference_id' => Auth::user()->id,
+                    'status' => 'completed'
+                ]);
+                
+                $msg = 'Đã trừ tiền khách thành công!';
+            }
+
+            $systemWallet->save();
+            $userWallet->save();
+            DB::commit();
+
+            return back()->with('success', $msg . ' Đã đồng bộ vào Kho Bạc!');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', $e->getMessage());
         }
     }
 
-    // 3. Xem lịch sử giao dịch của 1 user cụ thể
+    // 3. Xem lịch sử giao dịch
     public function history($id)
     {
         $user = User::findOrFail($id);
 
-        // Đảm bảo user này có ví để xem lịch sử
         $wallet = Wallet::firstOrCreate(
             ['user_id' => $user->id],
             ['balance' => 0, 'status' => 'active']
         );
 
-        // Lấy danh sách giao dịch mới nhất xếp lên đầu
-        $transactions = $wallet->transactions()->paginate(15);
+        $transactions = $wallet->transactions()->orderBy('created_at', 'desc')->paginate(15);
 
         return view('admin.wallets.history', compact('user', 'wallet', 'transactions'));
+    }
+
+    // 4. Hiển thị trang Sao kê Ví Tổng
+    public function systemWallet()
+    {
+        $systemWallet = Wallet::firstOrCreate(
+            ['user_id' => 1], 
+            ['balance' => 0, 'status' => 'active']
+        );
+
+        $transactions = WalletTransaction::where('wallet_id', $systemWallet->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $users = User::where('id', '!=', 1)->get();
+
+        return view('admin.wallets.system', compact('systemWallet', 'transactions', 'users'));
+    }
+
+    // 5. Form chuyển tiền Kho Bạc
+    public function addMoneyToUser(Request $request)
+    {
+        $request->merge(['action' => 'add']); 
+        return $this->update($request);
     }
 }

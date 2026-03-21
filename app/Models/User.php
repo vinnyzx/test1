@@ -114,9 +114,9 @@ class User extends Authenticatable  implements MustVerifyEmail
 
 
     // 2. Cột ảo tính Tổng điểm hiện tại của User
-    public function getTotalPointsAttribute()
+   public function getTotalPointsAttribute()
     {
-        // Tính tổng tất cả các điểm cộng (+) và trừ (-) trong lịch sử
-        return $this->pointHistories()->sum('points') ?? 0;
+        // Trỏ thẳng vào cột có sẵn trong DB, load nhanh như chớp!
+        return $this->reward_points ?? 0;
     }
 }

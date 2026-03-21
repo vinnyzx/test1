@@ -48,24 +48,31 @@
             <p class="text-slate-500 font-medium italic">Hệ thống tài chính Bee Phone Admin</p>
         </div>
         
-        <form action="{{ route('admin.wallets.index') }}" method="GET" class="flex items-center gap-2 w-full md:w-auto">
-            <div class="relative w-full md:w-80">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                </span>
-                <input type="text" name="search" value="{{ request('search') }}" 
-                       placeholder="Tìm tên hoặc email khách hàng..." 
-                       class="block w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-bee outline-none shadow-sm transition-all">
-            </div>
-            <button type="submit" class="px-6 py-3 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all text-sm shadow-md">
-                TÌM
-            </button>
-            @if(request('search'))
-                <a href="{{ route('admin.wallets.index') }}" class="px-4 py-3 bg-white text-slate-400 font-bold rounded-2xl hover:text-rose-500 transition-all text-sm border border-slate-200 shadow-sm">
-                    XÓA
-                </a>
-            @endif
-        </form>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <a href="{{ route('admin.system_wallet') }}" class="px-6 py-3 bg-yellow-500 text-black font-black rounded-2xl hover:bg-yellow-400 transition-all text-sm shadow-md flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">account_balance</span>
+                KHO BẠC HỆ THỐNG
+            </a>
+
+            <form action="{{ route('admin.wallets.index') }}" method="GET" class="flex items-center gap-2 w-full md:w-auto">
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    </span>
+                    <input type="text" name="search" value="{{ request('search') }}" 
+                           placeholder="Tìm tên hoặc email khách hàng..." 
+                           class="block w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-bee outline-none shadow-sm transition-all">
+                </div>
+                <button type="submit" class="px-6 py-3 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all text-sm shadow-md">
+                    TÌM
+                </button>
+                @if(request('search'))
+                    <a href="{{ route('admin.wallets.index') }}" class="px-4 py-3 bg-white text-slate-400 font-bold rounded-2xl hover:text-rose-500 transition-all text-sm border border-slate-200 shadow-sm">
+                        XÓA
+                    </a>
+                @endif
+            </form>
+        </div>
     </div>
 
     @if(session('success'))
@@ -82,7 +89,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-white">
         <div class="bg-slate-900 p-6 rounded-[2rem] shadow-xl shadow-slate-200">
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Tổng quỹ hệ thống</p>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Tổng tiền ví khách hàng</p>
             <h3 class="text-2xl font-black mt-1">{{ number_format($totalBalance, 0, ',', '.') }} đ</h3>
         </div>
         <div class="bg-emerald-500 p-6 rounded-[2rem] shadow-xl shadow-emerald-100">
@@ -204,10 +211,10 @@
     @if(session('error'))
         Swal.fire({
             icon: 'error',
-            title: 'Ối! Không đủ tiền',
-            text: '{{ session('error') }}',
+            title: 'Ối! Có lỗi xảy ra',
+            text: '{!! session('error') !!}',
             confirmButtonText: 'Đã hiểu',
-            confirmButtonColor: '#FFC107', // Màu vàng Bee
+            confirmButtonColor: '#FFC107', 
             background: '#fff',
             borderRadius: '2rem',
             customClass: {
@@ -221,7 +228,7 @@
         Swal.fire({
             icon: 'success',
             title: 'Thành công!',
-            text: '{{ session('success') }}',
+            text: '{!! session('success') !!}',
             timer: 2000,
             showConfirmButton: false,
             borderRadius: '2rem'

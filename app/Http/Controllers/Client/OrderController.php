@@ -59,7 +59,7 @@ class OrderController extends Controller
                 $pointsEarned = floor($order->total_amount / $earnRate);
 
                 if ($pointsEarned > 0) {
-                    // Lưu vào lịch sử điểm
+                    // 1. Lưu vào lịch sử điểm
                     PointHistory::create([
                         'user_id' => $order->user_id,
                         'order_id' => $order->id,
@@ -67,6 +67,11 @@ class OrderController extends Controller
                         'type' => 'earn',
                         'description' => 'Tích điểm hoàn thành đơn hàng ' . $order->order_code
                     ]);
+
+                    // 2. CỘNG ĐIỂM TRỰC TIẾP VÀO BẢNG USERS
+                    $customer = \App\Models\User::find($order->user_id);
+                    $customer->reward_points += $pointsEarned;
+                    $customer->save();
                 }
             }
             // ==========================================

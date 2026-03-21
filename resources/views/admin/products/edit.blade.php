@@ -223,7 +223,8 @@
                                                                 <input type="hidden" name="variations[{{ $index }}][id]" value="{{ $variant->id }}">
                                                             </div>
                                                             <div class="flex items-center gap-4">
-                                                                <button type="button" class="text-red-500 text-[10px] font-bold uppercase" onclick="$(this).closest('.variation-item').remove()">Xóa</button>
+                                                                {{-- ĐÃ BỔ SUNG CONFIRM CHO BIẾN THỂ CŨ --}}
+                                                                <button type="button" class="text-red-500 text-[10px] font-bold uppercase" onclick="if(confirm('Bro có chắc chắn muốn xóa biến thể này không?')) $(this).closest('.variation-item').remove()">Xóa</button>
                                                             </div>
                                                         </div>
                                                         
@@ -610,7 +611,8 @@
                                 ${hiddens}
                             </div>
                             <div class="flex items-center gap-4">
-                                <button type="button" class="text-red-500 text-[10px] font-bold uppercase" onclick="$(this).closest('.variation-item').remove()">Xóa</button>
+                                {{-- ĐÃ BỔ SUNG CONFIRM CHO BIẾN THỂ MỚI TẠO --}}
+                                <button type="button" class="text-red-500 text-[10px] font-bold uppercase" onclick="if(confirm('Bro có chắc chắn muốn xóa biến thể này không?')) $(this).closest('.variation-item').remove()">Xóa</button>
                             </div>
                         </div>
                         <div class="p-4 grid grid-cols-2 md:grid-cols-5 gap-4 bg-white" style="display:none;">

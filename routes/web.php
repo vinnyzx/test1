@@ -208,7 +208,6 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::resource('vouchers', VoucherController::class);
 
         // 7. Quản lý Đơn hàng (QUYỀN ORDER VIEW ĐƯỢC CHUYỂN VÀO ĐÂY)
-
         Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status.update');
@@ -216,18 +215,23 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::patch('orders/{order}/return-confirm', [OrderController::class, 'confirmReturn'])->name('orders.return.confirm');
         Route::get('orders/{order}/print-pdf', [OrderController::class, 'printPdf'])->name('orders.print.pdf');
 
-
         // 8. Quản lý bài viết
         Route::resource('posts', PostController::class);
         Route::resource('post-categories', PostCategoryController::class);
         Route::post('posts/upload', [PostController::class, 'upload'])->name('posts.upload');
         Route::post('posts/toggle-status/{id}', [PostController::class, 'toggleStatus'])
-            ->name('admin.posts.toggleStatus');
+            ->name('posts.toggleStatus');
 
         // 9. Quản lý Ví tiền
         Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
-        Route::post('/wallets/update-balance', [WalletController::class, 'updateBalance'])->name('wallets.update');
+        Route::post('/wallets/update', [WalletController::class, 'update'])->name('wallets.update');
         Route::get('/wallets/{id}/history', [WalletController::class, 'history'])->name('wallets.history');
+        
+        // Giao diện xem sao kê Ví Tổng
+        Route::get('/system-wallet', [WalletController::class, 'systemWallet'])->name('system_wallet');
+        
+        // Nút xử lý cộng tiền cho User
+        Route::post('/system-wallet/add-money', [WalletController::class, 'addMoneyToUser'])->name('system_wallet.add_money');
 
         // 10. Quản lý Điểm thưởng (Bee Point)
         Route::get('/points', [PointController::class, 'index'])->name('points.index');

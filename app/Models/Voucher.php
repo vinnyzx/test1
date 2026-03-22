@@ -23,20 +23,27 @@ class Voucher extends Model
         'end_date',
         'status',
     ];
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_vouchers')
             ->withPivot('order_id', 'used_at')
             ->withTimestamps();
     }
-    public function brands(){
-        return $this->belongsToMany(Brand::class,'voucher_brand');
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class, 'voucher_brand');
     }
-    public function categories(){
-        return $this->belongsToMany(Category::class,'voucher_category');
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'voucher_category');
     }
-    public function products(){
-        return $this->belongsToMany(Product::class,'voucher_product');
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'voucher_product');
     }
     public function getVoucherStatusAttribute()
     {
@@ -46,9 +53,9 @@ class Voucher extends Model
         if ($this->used_count == $this->usage_limit) {
             return 'Hết lượn dùng';
         }
-          if ($this->start_date && now()->lt($this->start_date)) {
-        return 'Chưa được sử dụng';
-    }
+        if ($this->start_date && now()->lt($this->start_date)) {
+            return 'Chưa được sử dụng';
+        }
         if ($this->end_date && now()->gt($this->end_date)) {
             return 'Đã Hết hạn';
         }

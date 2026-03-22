@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin.layout')
 
 @section('title', 'Chỉnh sửa người dùng - Bee Phone Admin')
 

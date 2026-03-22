@@ -1,7 +1,6 @@
-@extends('admin.layouts.app')
+@extends('admin.layout')
 
 @section('title', 'Quản lý người dùng')
-@section('subtitle', 'Danh sách toàn bộ người dùng trong hệ thống')
 
 @section('content')
 <div class="flex flex-wrap justify-between items-end gap-4">
@@ -73,7 +72,7 @@
             </thead>
             <tbody class="divide-y divide-[#f5f3f0]">
                 @forelse($users as $user)
-                <tr class="hover:bg-gray-50 transition-colors  ? 'bg-red-50/30' : '' }}">
+                <tr class="hover:bg-gray-50 transition-colors {{ $user->isLocked() ? 'bg-red-50/30' : '' }}">
                     <td class="py-4 px-4 text-sm font-mono text-[#8a8060]">#US-{{ $user->id }}</td>
                     <td class="py-4 px-4">
                         <div class="flex items-center gap-3">
@@ -127,23 +126,12 @@
                                     <span class="material-symbols-outlined">key</span>
                                 </button>
                             </form>
-                            <form method="POST"
-                                action="{{ route('admin.users.destroy',$user->id) }}"
-                                onsubmit="return confirm('Chuyển user vào thùng rác?')">
-
+                            <form method="POST" action="/admin/users/{{ $user->id }}" onsubmit="return confirm('Chắc chắn xóa?')">
                                 @csrf
                                 @method('DELETE')
-
-                                <button class="p-2 text-[#8a8060] hover:text-red-600 transition-colors"
-                                    title="Xóa mềm"
-                                    type="submit">
-
-                                    <span class="material-symbols-outlined">
-                                        delete
-                                    </span>
-
+                                <button class="p-2 text-[#8a8060] hover:text-red-600 transition-colors" title="Xóa" type="submit">
+                                    <span class="material-symbols-outlined">delete</span>
                                 </button>
-
                             </form>
                         </div>
                     </td>
@@ -169,12 +157,6 @@
             <h2 class="text-2xl font-bold text-[#181611]">Phân quyền Vai trò</h2>
             <p class="text-[#8a8060] text-sm">Quản lý ma trận quyền hạn cho từng loại tài khoản trong hệ thống</p>
         </div>
-<a href="{{ route('admin.users.trash') }}">
-    <button class="flex items-center gap-2 rounded-lg h-10 px-4 bg-white border border-[#e6e3db] text-[#181611] text-sm font-bold hover:bg-gray-50" type="button">  
-        <span class="material-symbols-outlined">delete</span>
-        User xóa mềm
-    </button>
-</a>
         <button class="flex items-center gap-2 rounded-lg h-10 px-4 bg-white border border-[#e6e3db] text-[#181611] text-sm font-bold hover:bg-gray-50" type="button">
             <span class="material-symbols-outlined">add</span>
             Tạo vai trò mới

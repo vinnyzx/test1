@@ -34,6 +34,7 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\ChatbotController;
 use App\Http\Controllers\Client\PostController as ClientPostController;
+use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,16 @@ Route::middleware('check.verified')->group(function () {
     // QUẢN LÝ ĐIỂM THƯỞNG (BEE POINT)
     Route::get('/bee-point', [App\Http\Controllers\Client\PointController::class, 'index'])->name('client.points.index');
     Route::post('/bee-point/redeem', [App\Http\Controllers\Client\PointController::class, 'redeem'])->name('client.points.redeem');
+
+    // Voucher người dùng
+    Route::get('user/vouchers' ,[ProfileController::class,'user_voucher'])->name('user.vouchers');
+    Route::delete('user/vouchers/{id}', [ClientVoucherController::class, 'delete'])->name('user.vouchers.delete');
+
+    // Danh sách vouchers
+    Route::get('vouchers' ,[ClientVoucherController::class,'index'])->name('vouchers');
+
+    // Lưu voucher người dùng
+    Route::post('vouchers/save/{id}', [ClientVoucherController::class, 'saveVoucher'])->name('vouchers.save');
 });
 
 // ==========================================

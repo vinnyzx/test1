@@ -84,4 +84,10 @@ class ProfileController extends Controller
             'user' => $user
         ]);
     }
+    public function user_voucher(){
+        $user = Auth::user();
+        return view('client.profiles.voucher')->with([
+            'user' => $user
+        ]);
+    }
 }

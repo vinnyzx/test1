@@ -112,7 +112,10 @@ class User extends Authenticatable  implements MustVerifyEmail
     }
     // 1. Mối quan hệ với bảng Lịch sử điểm
 
-
+    public function userVouchers()
+    {
+        return $this->belongsToMany(Voucher::class, 'user_vouchers')->wherePivot('order_id');
+    }
     // 2. Cột ảo tính Tổng điểm hiện tại của User
     public function getTotalPointsAttribute()
     {

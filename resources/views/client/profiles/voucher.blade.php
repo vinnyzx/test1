@@ -345,7 +345,7 @@
                         Bạn chưa lưu mã giảm giá nào. Hãy săn ngay các ưu đãi hấp dẫn để mua sắm tiết kiệm hơn tại Bee Phone
                         nhé!
                     </p>
-                    <a href="/khuyen-mai"
+                    <a href="/vouchers"
                         class="px-8 py-3 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors hover:shadow-lg active:scale-95">
                         Tới trang Khuyến mãi
                     </a>

@@ -41,8 +41,8 @@
                             </svg>
                             Đơn hàng của tôi
                         </a>
-                        <a class="flex items-center gap-3 px-6 py-3 text-sm transition {{ request()->routeIs('client.vouchers.*') ? 'border-l-4 border-amber-400 bg-amber-50 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50' }}"
-                            href="{{route('user.vouchers')}}">
+                        <a class="flex items-center gap-3 px-6 py-3 text-sm transition {{ request()->routeIs('user.vouchers*') ? 'border-l-4 border-amber-400 bg-amber-50 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50' }}"
+                            href="{{ route('user.vouchers') }}">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -51,7 +51,7 @@
                             </svg>
                             Voucher đã lưu
                         </a>
-                        <a class="flex items-center gap-3 px-6 py-3 text-sm transition text-gray-600 hover:bg-gray-50"
+                        {{-- <a class="flex items-center gap-3 px-6 py-3 text-sm transition text-gray-600 hover:bg-gray-50"
                             href="#">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -60,7 +60,7 @@
                                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                             </svg>
                             Sản phẩm yêu thích
-                        </a>
+                        </a> --}}
 
                         <a class="flex items-center gap-3 px-6 py-3 text-sm transition {{ request()->routeIs('profile.wallet') ? 'border-l-4 border-amber-400 bg-amber-50 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50' }}"
                             href="{{ route('profile.wallet') }}">

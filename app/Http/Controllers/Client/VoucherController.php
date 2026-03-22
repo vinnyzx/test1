@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class VoucherController extends Controller
         $search = request()->input('search');
         $type = request()->input('type');
         $min_spend = request()->input('min_spend');
-
+        $user = User::find(Auth::id());
 
         if ($search) {
             // Nhóm Tìm kiếm: (Code LIKE ... OR Name LIKE ...)
@@ -49,7 +50,7 @@ class VoucherController extends Controller
 
         // 3. Nếu user ĐÃ ĐĂNG NHẬP, lấy ra danh sách ID voucher họ đã lưu
         if (Auth::check()) {
-            $savedVoucherIds = Auth::user()
+            $savedVoucherIds = $user
                 ->userVouchers()
                 ->pluck('vouchers.id') // Chỉ lấy cột ID
                 ->toArray(); // Chuyển về mảng phẳng [1, 2, 3]
@@ -63,7 +64,7 @@ class VoucherController extends Controller
 
     public function delete($id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $user->userVouchers()->detach($id);
         return back()->with('success', 'Đã bỏ lưu voucher thành công!');
     }
@@ -71,7 +72,7 @@ class VoucherController extends Controller
 
     public function saveVoucher($id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         if ($user) {
             // KIỂM TRA: Nếu user đã lưu voucher này rồi thì không lưu đè nữa

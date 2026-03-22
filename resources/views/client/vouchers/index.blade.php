@@ -80,304 +80,314 @@
                         default => 'bg-gray-100 text-gray-600 border-gray-200',
                     };
                 @endphp
-                <div
-                    class="group bg-white rounded-xl overflow-hidden flex border border-gray-200 transition-all duration-300 {{ $isInactive ? 'opacity-75 grayscale-[20%]' : 'hover:shadow-lg hover:border-amber-200' }} relative">
+                @if ($voucher->voucher_status == 'Hoạt động')
                     <div
-                        class="w-32 {{ $isInactive ? 'bg-gray-50' : 'bg-amber-50' }} flex flex-col items-center justify-center p-4 border-r-2 border-dashed border-gray-200 relative">
+                        class="group bg-white rounded-xl overflow-hidden flex border border-gray-200 transition-all duration-300 {{ $isInactive ? 'opacity-75 grayscale-[20%]' : 'hover:shadow-lg hover:border-amber-200' }} relative">
                         <div
-                            class="absolute -top-3 -right-3 w-6 h-6 bg-gray-50 rounded-full border-b border-l border-gray-200">
-                        </div>
-                        <div
-                            class="absolute -bottom-3 -right-3 w-6 h-6 bg-gray-50 rounded-full border-t border-l border-gray-200">
-                        </div>
+                            class="w-32 {{ $isInactive ? 'bg-gray-50' : 'bg-amber-50' }} flex flex-col items-center justify-center p-4 border-r-2 border-dashed border-gray-200 relative">
+                            <div
+                                class="absolute -top-3 -right-3 w-6 h-6 bg-gray-50 rounded-full border-b border-l border-gray-200">
+                            </div>
+                            <div
+                                class="absolute -bottom-3 -right-3 w-6 h-6 bg-gray-50 rounded-full border-t border-l border-gray-200">
+                            </div>
 
-                        <span
-                            class="material-symbols-outlined {{ $isInactive ? 'text-gray-400' : 'text-amber-500' }} text-4xl mb-2">
-                            {{ $isInactive ? 'block' : 'loyalty' }}
-                        </span>
-                        <span
-                            class="text-[10px] font-bold {{ $isInactive ? 'text-gray-500' : 'text-amber-700' }} uppercase tracking-widest text-center">
-                            {{ $voucher->code }}
-                        </span>
-                    </div>
-
-                    <div class="flex-1 p-5">
-                        <div class="flex justify-between items-start mb-2">
                             <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border {{ $statusClasses }}">
-                                {{ $displayStatus }}
+                                class="material-symbols-outlined {{ $isInactive ? 'text-gray-400' : 'text-amber-500' }} text-4xl mb-2">
+                                {{ $isInactive ? 'block' : 'loyalty' }}
                             </span>
-                            <span onclick="openModal('modal-voucher-{{ $voucher->id }}')"
-                                class="material-symbols-outlined text-gray-400 text-lg cursor-pointer hover:text-amber-500 transition-colors">info</span>
+                            <span
+                                class="text-[10px] font-bold {{ $isInactive ? 'text-gray-500' : 'text-amber-700' }} uppercase tracking-widest text-center">
+                                {{ $voucher->code }}
+                            </span>
                         </div>
 
-                        <h3 class="text-lg font-bold {{ $isInactive ? 'text-gray-500' : 'text-gray-900' }} mb-1 leading-tight line-clamp-2"
-                            title="{{ $voucher->name }}">
-                            {{ $voucher->name }}
-                        </h3>
+                        <div class="flex-1 p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border {{ $statusClasses }}">
+                                    {{ $displayStatus }}
+                                </span>
+                                <span onclick="openModal('modal-voucher-{{ $voucher->id }}')"
+                                    class="material-symbols-outlined text-gray-400 text-lg cursor-pointer hover:text-amber-500 transition-colors">info</span>
+                            </div>
 
-                        <p class="text-sm font-bold text-amber-600 mb-3">
-                            @if ($voucher->discount_type == 'percent')
-                                Giảm {{ $voucher->discount_value }}%
-                                @if ($voucher->max_discount)
-                                    <span class="text-xs text-gray-500 font-normal">(Tối đa
-                                        {{ number_format($voucher->max_discount, 0, ',', '.') }}đ)</span>
+                            <h3 class="text-lg font-bold {{ $isInactive ? 'text-gray-500' : 'text-gray-900' }} mb-1 leading-tight line-clamp-2"
+                                title="{{ $voucher->name }}">
+                                {{ $voucher->name }}
+                            </h3>
+
+                            <p class="text-sm font-bold text-amber-600 mb-3">
+                                @if ($voucher->discount_type == 'percent')
+                                    Giảm {{ $voucher->discount_value }}%
+                                    @if ($voucher->max_discount)
+                                        <span class="text-xs text-gray-500 font-normal">(Tối đa
+                                            {{ number_format($voucher->max_discount, 0, ',', '.') }}đ)</span>
+                                    @endif
+                                @else
+                                    Giảm {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
                                 @endif
-                            @else
-                                Giảm {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
-                            @endif
-                        </p>
+                            </p>
 
-                        <div class="flex items-center text-xs text-gray-500 font-medium mb-4">
-                            <span class="material-symbols-outlined text-sm mr-1">schedule</span>
-                            HSD:
-                            {{ $voucher->end_date ? \Carbon\Carbon::parse($voucher->end_date)->format('d/m/Y') : 'Vô thời hạn' }}
-                        </div>
+                            <div class="flex items-center text-xs text-gray-500 font-medium mb-4">
+                                <span class="material-symbols-outlined text-sm mr-1">schedule</span>
+                                HSD:
+                                {{ $voucher->end_date ? \Carbon\Carbon::parse($voucher->end_date)->format('d/m/Y') : 'Vô thời hạn' }}
+                            </div>
 
-                        <div class="flex space-x-3">
-                            @if ($isInactive)
-                                <button disabled
-                                    class="flex-1 py-2 bg-gray-200 text-gray-500 font-bold rounded-lg text-sm cursor-not-allowed">
-                                    Đã kết thúc
-                                </button>
-                            @elseif ($isSaved)
-                                <a href="{{ route('client.products.index') }}"
-                                    class="flex-1 py-2 bg-purple-100 text-purple-700 border border-purple-200 font-bold rounded-lg text-sm hover:bg-purple-200 transition-colors text-center inline-block">
-                                    Dùng ngay
-                                </a>
-                            @else
-                                <form action="{{ route('vouchers.save', $voucher->id) }}" method="POST" class="flex-1">
-                                    @csrf
-                                    <button
-                                        class="w-full py-2 bg-amber-500 text-white font-bold rounded-lg text-sm hover:bg-amber-600 transition-colors active:scale-95 shadow-sm">
-                                        Lưu voucher
+                            <div class="flex space-x-3">
+                                @if ($isInactive)
+                                    <button disabled
+                                        class="flex-1 py-2 bg-gray-200 text-gray-500 font-bold rounded-lg text-sm cursor-not-allowed">
+                                        Đã kết thúc
                                     </button>
-                                </form>
-                            @endif
+                                @elseif ($isSaved)
+                                    <a href="{{ route('client.products.index') }}"
+                                        class="flex-1 py-2 bg-purple-100 text-purple-700 border border-purple-200 font-bold rounded-lg text-sm hover:bg-purple-200 transition-colors text-center inline-block">
+                                        Dùng ngay
+                                    </a>
+                                @else
+                                    <form action="{{ route('vouchers.save', $voucher->id) }}" method="POST"
+                                        class="flex-1">
+                                        @csrf
+                                        <button
+                                            class="w-full py-2 bg-amber-500 text-white font-bold rounded-lg text-sm hover:bg-amber-600 transition-colors active:scale-95 shadow-sm">
+                                            Lưu voucher
+                                        </button>
+                                    </form>
+                                @endif
 
-                            <button onclick="openModal('modal-voucher-{{ $voucher->id }}')"
-                                class="px-4 py-2 border border-gray-200 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                Chi tiết
-                            </button>
+                                <button onclick="openModal('modal-voucher-{{ $voucher->id }}')"
+                                    class="px-4 py-2 border border-gray-200 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                    Chi tiết
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Modal Chi Tiết Voucher --}}
-                <div id="modal-voucher-{{ $voucher->id }}" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title"
-                    role="dialog" aria-modal="true">
-                    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity opacity-0 duration-300"
-                        id="backdrop-{{ $voucher->id }}" onclick="closeModal('modal-voucher-{{ $voucher->id }}')"></div>
+                    {{-- Modal Chi Tiết Voucher --}}
+                    <div id="modal-voucher-{{ $voucher->id }}" class="fixed inset-0 z-50 hidden"
+                        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity opacity-0 duration-300"
+                            id="backdrop-{{ $voucher->id }}" onclick="closeModal('modal-voucher-{{ $voucher->id }}')">
+                        </div>
 
-                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-                        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                            <div id="dialog-{{ $voucher->id }}"
-                                class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 duration-300 sm:my-8 sm:w-full sm:max-w-lg">
+                        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                                <div id="dialog-{{ $voucher->id }}"
+                                    class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 duration-300 sm:my-8 sm:w-full sm:max-w-lg">
 
-                                <button onclick="closeModal('modal-voucher-{{ $voucher->id }}')"
-                                    class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
+                                    <button onclick="closeModal('modal-voucher-{{ $voucher->id }}')"
+                                        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
 
-                                <div class="bg-amber-50 px-6 py-5 border-b border-amber-100 flex items-center">
-                                    <div
-                                        class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 border border-amber-100">
-                                        <span
-                                            class="material-symbols-outlined text-amber-500 text-2xl">local_activity</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-bold text-gray-900" id="modal-title">Chi tiết ưu đãi</h3>
-                                        <p class="text-sm text-amber-600 font-bold tracking-widest">{{ $voucher->code }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="px-6 py-6 text-gray-600 space-y-5">
-                                    <h4 class="text-xl font-bold text-gray-800 leading-snug">{{ $voucher->name }}</h4>
-
-                                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
-
-                                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                                            <span class="text-gray-500 text-sm">Mức giảm:</span>
-                                            <span class="font-bold text-amber-600">
-                                                @if ($voucher->discount_type == 'percent')
-                                                    Giảm {{ $voucher->discount_value }}%
-                                                    @if ($voucher->max_discount)
-                                                        <span class="text-xs text-gray-500 font-normal">(Tối đa
-                                                            {{ number_format($voucher->max_discount, 0, ',', '.') }}đ)</span>
-                                                    @endif
-                                                @else
-                                                    Giảm {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
-                                                @endif
-                                            </span>
-                                        </div>
-
-                                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                                            <span class="text-gray-500 text-sm">Đơn tối thiểu:</span>
-                                            <span
-                                                class="font-bold text-gray-800">{{ number_format($voucher->min_order_value, 0, ',', '.') }}đ</span>
-                                        </div>
-
-                                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                                            <span class="text-gray-500 text-sm">Giới hạn sử dụng:</span>
-                                            <span class="font-medium text-gray-800">
-                                                {{ $voucher->usage_limit_per_user ? $voucher->usage_limit_per_user . ' lần/người' : 'Không giới hạn' }}
-                                            </span>
-                                        </div>
-
-                                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                                            <span class="text-gray-500 text-sm">Lượt dùng còn lại:</span>
-                                            <span class="font-medium text-gray-800">
-                                                @if ($voucher->usage_limit)
-                                                    {{ $voucher->usage_limit - $voucher->used_count }} /
-                                                    {{ $voucher->usage_limit }} lượt
-                                                @else
-                                                    Không giới hạn
-                                                @endif
-                                            </span>
-                                        </div>
-
-                                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                                            <span class="text-gray-500 text-sm">Hiệu lực từ:</span>
-                                            <span
-                                                class="font-medium text-gray-800">{{ $voucher->start_date ? \Carbon\Carbon::parse($voucher->start_date)->format('H:i - d/m/Y') : 'N/A' }}</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500 text-sm">Hết hạn vào:</span>
-                                            <span class="font-bold {{ $isInactive ? 'text-red-500' : 'text-amber-600' }}">
-                                                {{ $voucher->end_date ? \Carbon\Carbon::parse($voucher->end_date)->format('H:i - d/m/Y') : 'Vô thời hạn' }}
-                                            </span>
-                                        </div>
-                                        @if ($voucher->order_id)
-                                            <div class="flex justify-between border-t border-gray-200 pt-2 mt-2">
-                                                <span class="text-gray-500 text-sm">Đã dùng cho đơn:</span>
-                                                <a href="/don-hang/{{ $voucher->order_id }}"
-                                                    class="font-bold text-purple-600 hover:underline">
-                                                    #{{ $voucher->order_id }}
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    <div>
-                                        <h5 class="font-bold text-gray-800 mb-2 flex items-center">
-                                            <span
-                                                class="material-symbols-outlined text-base mr-1 text-gray-400">description</span>
-                                            Thể lệ chương trình:
-                                        </h5>
+                                    <div class="bg-amber-50 px-6 py-5 border-b border-amber-100 flex items-center">
                                         <div
-                                            class="text-sm text-gray-600 leading-relaxed bg-white p-3 border border-gray-100 rounded-lg">
-                                            {!! nl2br(
-                                                e(
-                                                    $voucher->description ??
-                                                        'Áp dụng cho mọi đơn hàng thỏa mãn điều kiện giá trị tối thiểu. Số lượng mã có hạn, chương trình có thể kết thúc sớm hơn dự kiến khi hết lượt sử dụng.',
-                                                ),
-                                            ) !!}
+                                            class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 border border-amber-100">
+                                            <span
+                                                class="material-symbols-outlined text-amber-500 text-2xl">local_activity</span>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900" id="modal-title">Chi tiết ưu đãi
+                                            </h3>
+                                            <p class="text-sm text-amber-600 font-bold tracking-widest">
+                                                {{ $voucher->code }}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h5 class="font-bold text-gray-800 mb-2 flex items-center">
-                                            <span
-                                                class="material-symbols-outlined text-base mr-1 text-gray-400">check_circle</span>
-                                            Sản phẩm áp dụng:
-                                        </h5>
 
-                                        <div class="text-sm text-gray-600 bg-white p-3 border border-gray-100 rounded-lg">
-                                            @php
-                                                $hasProducts = $voucher->products && $voucher->products->count() > 0;
-                                                $hasCategories =
-                                                    $voucher->categories && $voucher->categories->count() > 0;
-                                                $hasBrands = $voucher->brands && $voucher->brands->count() > 0;
-                                                $hasSpecificConditions = $hasProducts || $hasCategories || $hasBrands;
-                                            @endphp
+                                    <div class="px-6 py-6 text-gray-600 space-y-5">
+                                        <h4 class="text-xl font-bold text-gray-800 leading-snug">{{ $voucher->name }}</h4>
 
-                                            @if ($hasSpecificConditions)
-                                                <div class="space-y-3">
-                                                    @if ($hasCategories)
-                                                        <div>
-                                                            <span
-                                                                class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Danh
-                                                                mục:</span>
-                                                            <div class="flex flex-wrap gap-1.5">
-                                                                @foreach ($voucher->categories as $category)
-                                                                    <span
-                                                                        class="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-md text-[11px] font-semibold">
-                                                                        {{ $category->name }}
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
+                                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+
+                                            <div class="flex justify-between border-b border-gray-200 pb-2">
+                                                <span class="text-gray-500 text-sm">Mức giảm:</span>
+                                                <span class="font-bold text-amber-600">
+                                                    @if ($voucher->discount_type == 'percent')
+                                                        Giảm {{ $voucher->discount_value }}%
+                                                        @if ($voucher->max_discount)
+                                                            <span class="text-xs text-gray-500 font-normal">(Tối đa
+                                                                {{ number_format($voucher->max_discount, 0, ',', '.') }}đ)</span>
+                                                        @endif
+                                                    @else
+                                                        Giảm {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
                                                     @endif
+                                                </span>
+                                            </div>
 
-                                                    @if ($hasBrands)
-                                                        <div>
-                                                            <span
-                                                                class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Thương
-                                                                hiệu:</span>
-                                                            <div class="flex flex-wrap gap-1.5">
-                                                                @foreach ($voucher->brands as $brand)
-                                                                    <span
-                                                                        class="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-100 rounded-md text-[11px] font-semibold">
-                                                                        {{ $brand->name }}
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
+                                            <div class="flex justify-between border-b border-gray-200 pb-2">
+                                                <span class="text-gray-500 text-sm">Đơn tối thiểu:</span>
+                                                <span
+                                                    class="font-bold text-gray-800">{{ number_format($voucher->min_order_value, 0, ',', '.') }}đ</span>
+                                            </div>
+
+                                            <div class="flex justify-between border-b border-gray-200 pb-2">
+                                                <span class="text-gray-500 text-sm">Giới hạn sử dụng:</span>
+                                                <span class="font-medium text-gray-800">
+                                                    {{ $voucher->usage_limit_per_user ? $voucher->usage_limit_per_user . ' lần/người' : 'Không giới hạn' }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex justify-between border-b border-gray-200 pb-2">
+                                                <span class="text-gray-500 text-sm">Lượt dùng còn lại:</span>
+                                                <span class="font-medium text-gray-800">
+                                                    @if ($voucher->usage_limit)
+                                                        {{ $voucher->usage_limit - $voucher->used_count }} /
+                                                        {{ $voucher->usage_limit }} lượt
+                                                    @else
+                                                        Không giới hạn
                                                     @endif
+                                                </span>
+                                            </div>
 
-                                                    @if ($hasProducts)
-                                                        <div>
-                                                            <span
-                                                                class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Sản
-                                                                phẩm cụ thể:</span>
-                                                            <div class="flex flex-wrap gap-1.5">
-                                                                @foreach ($voucher->products->take(5) as $product)
-                                                                    <span
-                                                                        class="inline-block px-2 py-1 bg-gray-50 text-gray-700 border border-gray-200 rounded-md text-[11px] truncate max-w-[200px]"
-                                                                        title="{{ $product->name }}">
-                                                                        {{ $product->name }}
-                                                                    </span>
-                                                                @endforeach
-
-                                                                @if ($voucher->products->count() > 5)
-                                                                    <span
-                                                                        class="inline-block px-2 py-1 bg-gray-800 text-white rounded-md text-[11px] font-bold shadow-sm">
-                                                                        +{{ $voucher->products->count() - 5 }} sản phẩm
-                                                                        khác
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            @else
-                                                <div class="flex items-center text-green-600 font-bold text-sm">
-                                                    <span
-                                                        class="material-symbols-outlined text-lg mr-1.5">all_inclusive</span>
-                                                    Áp dụng cho toàn bộ sản phẩm trên Bee Phone
+                                            <div class="flex justify-between border-b border-gray-200 pb-2">
+                                                <span class="text-gray-500 text-sm">Hiệu lực từ:</span>
+                                                <span
+                                                    class="font-medium text-gray-800">{{ $voucher->start_date ? \Carbon\Carbon::parse($voucher->start_date)->format('H:i - d/m/Y') : 'N/A' }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500 text-sm">Hết hạn vào:</span>
+                                                <span
+                                                    class="font-bold {{ $isInactive ? 'text-red-500' : 'text-amber-600' }}">
+                                                    {{ $voucher->end_date ? \Carbon\Carbon::parse($voucher->end_date)->format('H:i - d/m/Y') : 'Vô thời hạn' }}
+                                                </span>
+                                            </div>
+                                            @if ($voucher->order_id)
+                                                <div class="flex justify-between border-t border-gray-200 pt-2 mt-2">
+                                                    <span class="text-gray-500 text-sm">Đã dùng cho đơn:</span>
+                                                    <a href="/don-hang/{{ $voucher->order_id }}"
+                                                        class="font-bold text-purple-600 hover:underline">
+                                                        #{{ $voucher->order_id }}
+                                                    </a>
                                                 </div>
                                             @endif
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl border-t border-gray-100">
-                                    <button onclick="closeModal('modal-voucher-{{ $voucher->id }}')" type="button"
-                                        class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl text-sm hover:bg-gray-100 transition-colors">
-                                        Đóng
-                                    </button>
-                                    @if (!$isInactive)
-                                        <a href="{{ route('client.products.index') }}"
-                                            class="px-5 py-2.5 bg-amber-500 text-white font-bold rounded-xl text-sm hover:bg-amber-600 transition-colors shadow-sm active:scale-95 text-center inline-block">
-                                            Sử dụng ngay
-                                        </a>
-                                    @endif
+                                        <div>
+                                            <h5 class="font-bold text-gray-800 mb-2 flex items-center">
+                                                <span
+                                                    class="material-symbols-outlined text-base mr-1 text-gray-400">description</span>
+                                                Thể lệ chương trình:
+                                            </h5>
+                                            <div
+                                                class="text-sm text-gray-600 leading-relaxed bg-white p-3 border border-gray-100 rounded-lg">
+                                                {!! nl2br(
+                                                    e(
+                                                        $voucher->description ??
+                                                            'Áp dụng cho mọi đơn hàng thỏa mãn điều kiện giá trị tối thiểu. Số lượng mã có hạn, chương trình có thể kết thúc sớm hơn dự kiến khi hết lượt sử dụng.',
+                                                    ),
+                                                ) !!}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-bold text-gray-800 mb-2 flex items-center">
+                                                <span
+                                                    class="material-symbols-outlined text-base mr-1 text-gray-400">check_circle</span>
+                                                Sản phẩm áp dụng:
+                                            </h5>
+
+                                            <div
+                                                class="text-sm text-gray-600 bg-white p-3 border border-gray-100 rounded-lg">
+                                                @php
+                                                    $hasProducts =
+                                                        $voucher->products && $voucher->products->count() > 0;
+                                                    $hasCategories =
+                                                        $voucher->categories && $voucher->categories->count() > 0;
+                                                    $hasBrands = $voucher->brands && $voucher->brands->count() > 0;
+                                                    $hasSpecificConditions =
+                                                        $hasProducts || $hasCategories || $hasBrands;
+                                                @endphp
+
+                                                @if ($hasSpecificConditions)
+                                                    <div class="space-y-3">
+                                                        @if ($hasCategories)
+                                                            <div>
+                                                                <span
+                                                                    class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Danh
+                                                                    mục:</span>
+                                                                <div class="flex flex-wrap gap-1.5">
+                                                                    @foreach ($voucher->categories as $category)
+                                                                        <span
+                                                                            class="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-md text-[11px] font-semibold">
+                                                                            {{ $category->name }}
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
+
+                                                        @if ($hasBrands)
+                                                            <div>
+                                                                <span
+                                                                    class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Thương
+                                                                    hiệu:</span>
+                                                                <div class="flex flex-wrap gap-1.5">
+                                                                    @foreach ($voucher->brands as $brand)
+                                                                        <span
+                                                                            class="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-100 rounded-md text-[11px] font-semibold">
+                                                                            {{ $brand->name }}
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
+
+                                                        @if ($hasProducts)
+                                                            <div>
+                                                                <span
+                                                                    class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Sản
+                                                                    phẩm cụ thể:</span>
+                                                                <div class="flex flex-wrap gap-1.5">
+                                                                    @foreach ($voucher->products->take(5) as $product)
+                                                                        <span
+                                                                            class="inline-block px-2 py-1 bg-gray-50 text-gray-700 border border-gray-200 rounded-md text-[11px] truncate max-w-[200px]"
+                                                                            title="{{ $product->name }}">
+                                                                            {{ $product->name }}
+                                                                        </span>
+                                                                    @endforeach
+
+                                                                    @if ($voucher->products->count() > 5)
+                                                                        <span
+                                                                            class="inline-block px-2 py-1 bg-gray-800 text-white rounded-md text-[11px] font-bold shadow-sm">
+                                                                            +{{ $voucher->products->count() - 5 }} sản phẩm
+                                                                            khác
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center text-green-600 font-bold text-sm">
+                                                        <span
+                                                            class="material-symbols-outlined text-lg mr-1.5">all_inclusive</span>
+                                                        Áp dụng cho toàn bộ sản phẩm trên Bee Phone
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl border-t border-gray-100">
+                                        <button onclick="closeModal('modal-voucher-{{ $voucher->id }}')" type="button"
+                                            class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl text-sm hover:bg-gray-100 transition-colors">
+                                            Đóng
+                                        </button>
+                                        @if (!$isInactive)
+                                            <a href="{{ route('client.products.index') }}"
+                                                class="px-5 py-2.5 bg-amber-500 text-white font-bold rounded-xl text-sm hover:bg-amber-600 transition-colors shadow-sm active:scale-95 text-center inline-block">
+                                                Sử dụng ngay
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
             @empty
                 <div
                     class="col-span-full flex flex-col items-center justify-center py-16 bg-white rounded-2xl border-2 border-dashed border-gray-200">

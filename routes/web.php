@@ -75,13 +75,13 @@ Route::middleware('check.verified')->group(function () {
     Route::post('/cart/update', [CartController::class, 'update'])->name('client.cart.update');
     Route::post('/cart/remove', [CartController::class, 'remove'])->name('client.cart.remove');
     Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->name('client.cart.apply_voucher');
-
+Route::post('/cart/checkout-select', [App\Http\Controllers\Client\CartController::class, 'checkoutSelect'])->name('client.cart.checkout_select');
     // THANH TOÁN (CHECKOUT)
     Route::get('/thanh-toan', [CheckoutController::class, 'index'])->name('client.checkout.index');
     Route::post('/thanh-toan', [CheckoutController::class, 'process'])->name('client.checkout.process');
     Route::get('/dat-hang-thanh-cong', [CheckoutController::class, 'success'])->name('client.checkout.success');
     Route::get('/vnpay/response', [App\Http\Controllers\Client\CheckoutController::class, 'vnpay_return'])->name('vnpay.return');
-
+Route::post('/thanh-toan/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('client.checkout.remove_voucher');
     // QUẢN LÝ ĐƠN HÀNG CỦA KHÁCH
     Route::middleware(['auth'])->group(function () {
         Route::get('/don-mua', [ClientOrderController::class, 'index'])->name('client.orders.index');
@@ -107,6 +107,11 @@ Route::middleware('check.verified')->group(function () {
 
     // Lưu voucher người dùng
     Route::post('vouchers/save/{id}', [ClientVoucherController::class, 'saveVoucher'])->name('vouchers.save');
+
+    // QUẢN LÝ VOUCHER (KHUYẾN MÃI) - KHÁCH HÀNG
+    Route::get('/khuyen-mai', [App\Http\Controllers\Client\VoucherController::class, 'index'])->name('vouchers.index');
+    Route::post('/khuyen-mai/luu/{id}', [App\Http\Controllers\Client\VoucherController::class, 'saveVoucher'])->name('vouchers.save');
+    Route::post('/khuyen-mai/bo-luu/{id}', [App\Http\Controllers\Client\VoucherController::class, 'delete'])->name('vouchers.delete');
 });
 
 // ==========================================

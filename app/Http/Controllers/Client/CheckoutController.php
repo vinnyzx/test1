@@ -14,7 +14,8 @@ use App\Models\OrderItem;
 use App\Models\Voucher;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderPlacedMail;
 class CheckoutController extends Controller
 {
     /**
@@ -225,6 +226,15 @@ class CheckoutController extends Controller
             session()->forget('selected_cart_items');
 
             DB::commit();
+            $customerEmail = $order->customer_email;
+            if (!empty($customerEmail)) {
+                try {
+                    // Dùng Try-Catch để lỡ mạng lag gửi mail lỗi thì đơn hàng vẫn báo thành công
+                    Mail::to($customerEmail)->send(new OrderPlacedMail($order));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Lỗi gửi email xác nhận đơn: ' . $e->getMessage());
+                }
+            }
 
             // 2.6 LOGIC VNPAY
             if ($request->payment_method === 'vnpay') {

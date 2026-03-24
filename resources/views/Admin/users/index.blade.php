@@ -85,8 +85,9 @@
                     </td>
                     <td class="py-4 px-4">
                         @php
-                        $roleLabel = ucfirst($user->role ?? 'user');
-                        $roleClass = ($user->role ?? 'user') === 'admin' ? 'bg-primary/20 text-[#7c5e00]' : (($user->role ?? 'user') === 'staff' ? 'bg-[#f5f3f0] text-[#181611]' : 'bg-[#f5f3f0] text-[#181611]');
+                        $roleName = $user->role->name ?? 'user';
+                        $roleLabel = ucfirst($roleName);
+                        $roleClass = $roleName === 'admin' ? 'bg-primary/20 text-[#7c5e00]' : ($roleName === 'staff' ? 'bg-[#f5f3f0] text-[#181611]' : 'bg-[#f5f3f0] text-[#181611]');
                         @endphp
                         <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $roleClass }} uppercase tracking-wide">
                             {{ $roleLabel === 'User' ? 'Khách hàng' : $roleLabel }}
@@ -105,7 +106,7 @@
                         </div>
                         @endif
                     </td>
-                    <td class="py-4 px-4 text-sm text-[#8a8060]">{{ $user->created_at->format('d/m/Y') }}</td>
+                    <td class="py-4 px-4 text-sm text-[#8a8060]">{{ optional($user->created_at)->format('d/m/Y') ?? 'N/A' }}</td>
                     <td class="py-4 px-4 text-right">
                         <div class="flex justify-end gap-2">
                             <a href="/admin/users/{{ $user->id }}/activities" class="p-2 text-[#8a8060] hover:text-primary transition-colors" title="Xem Log">

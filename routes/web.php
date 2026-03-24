@@ -29,6 +29,7 @@ use App\Http\Controllers\AdminControllers\PostController;
 use App\Http\Controllers\AdminControllers\PostCategoryController;
 use App\Http\Controllers\AdminControllers\WalletController;
 use App\Http\Controllers\AdminControllers\SupportController;
+use App\Http\Controllers\AdminControllers\CustomerActivityController;
 
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
@@ -184,6 +185,9 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
         Route::get('/', function () {
             return view('admin.dashboard.index');
         })->name('dashboard');
+
+        // Thống kê hoạt động khách hàng
+        Route::get('customer-activity', [CustomerActivityController::class, 'index'])->name('customer-activity.index');
 
         // Quản lý Users
         Route::resource('users', UserController::class);

@@ -51,7 +51,7 @@ class User extends Authenticatable  implements MustVerifyEmail
 
     public function isLocked()
     {
-        return $this->status === 'locked'; // (Thay đổi logic cho phù hợp với DB của bạn)
+        return $this->status === 'banned';
     }
     public function role()
     {

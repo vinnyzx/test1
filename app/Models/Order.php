@@ -105,7 +105,7 @@ class Order extends Model
             self::STATUS_CANCELLED => [],
         ];
     }
-// test commit order
+
     public function canMoveTo(string $nextStatus): bool
     {
         if ($this->status === $nextStatus) {

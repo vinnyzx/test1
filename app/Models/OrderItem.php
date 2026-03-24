@@ -17,7 +17,7 @@ class OrderItem extends Model
         'quantity',
         'line_total'
     ];
-// test commit order
+
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

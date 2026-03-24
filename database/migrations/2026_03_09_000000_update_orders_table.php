@@ -62,7 +62,7 @@ return new class extends Migration
             }
         });
     }
-// test commit order
+
     /**
      * Reverse the migrations.
      */

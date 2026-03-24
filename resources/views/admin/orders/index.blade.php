@@ -19,7 +19,7 @@
         {{ session('status') }}
     </div>
     @endif
-
+    
     <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4 lg:p-5">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
             <div class="md:col-span-3">

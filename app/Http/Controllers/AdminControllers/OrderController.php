@@ -175,7 +175,7 @@ class OrderController extends Controller
 
         return back()->with('status', 'Đã xác nhận đổi/trả hàng.');
     }
-
+// test commit order
     public function printPdf(Order $order)
     {
         $pdf = Pdf::loadView('admin.orders.print', [

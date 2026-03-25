@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 
-<<<<<<< HEAD
-// Import API Controllers
-use App\Http\Controllers\Client\ChatbotController;
-=======
->>>>>>> parent of f42648a (Merge pull request #57 from huyng2104/duong1)
 // Import Admin & Auth Controllers
 use App\Http\Controllers\AdminControllers\CategoryController;
 use App\Http\Controllers\AdminControllers\CategoryFilterController;

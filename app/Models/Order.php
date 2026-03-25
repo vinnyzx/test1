@@ -33,7 +33,7 @@ class Order extends Model
         'payment_method',       // Đã thêm
         'payment_status',
     ];
-    
+
     protected $casts = [
         'ordered_at' => 'datetime',
         'cancelled_at' => 'datetime',
@@ -127,7 +127,6 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class)->orderBy('id');
     }
-<<<<<<< HEAD
 
     public function statusHistories(): HasMany
     {
@@ -138,6 +137,4 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-=======
->>>>>>> parent of f42648a (Merge pull request #57 from huyng2104/duong1)
 }

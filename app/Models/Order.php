@@ -127,6 +127,7 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class)->orderBy('id');
     }
+<<<<<<< HEAD
 
     public function statusHistories(): HasMany
     {
@@ -137,4 +138,6 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+=======
+>>>>>>> parent of f42648a (Merge pull request #57 from huyng2104/duong1)
 }
